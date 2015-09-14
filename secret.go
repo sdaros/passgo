@@ -1,7 +1,8 @@
-package main
+package passgo
 
 import (
 	"encoding/json"
+	_ "golang.org/x/crypto/nacl/secretbox"
 )
 
 type secret struct {
@@ -17,4 +18,9 @@ func (sec secret) String() string {
 		panic(err)
 	}
 	return string(result[:])
+}
+
+func (secret *secret) seal() []byte {
+	// TODO: implement nacl/secretbox
+	return []byte(nil)
 }

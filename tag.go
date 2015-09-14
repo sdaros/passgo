@@ -1,13 +1,11 @@
-package main
+package passgo
 
 import (
 	"golang.org/x/crypto/scrypt"
 	"golang.org/x/crypto/sha3"
 )
 
-type stamper interface {
-	lick() []byte
-}
+type tag string
 
 func (tag tag) lick() []byte {
 	// TODO: Convert to MAC using key
@@ -19,3 +17,4 @@ func (tag tag) lick() []byte {
 	}
 	return content
 }
+
