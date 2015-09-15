@@ -1,9 +1,5 @@
 package passgo
 
-type sealer interface {
-	seal() []byte
-}
-
 type stamper interface {
 	lick() []byte
 }

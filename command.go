@@ -11,6 +11,6 @@ func main() {
 	stamp := &stamp{stamper.lick(tag)}
 	fmt.Printf("Secret: %v,\nSealed Secret (Stamp): %v,\n",
 	secret, hex.EncodeToString(stamp.content))
-	seal := sealer.seal(secret)
+	seal := secret.seal()
 	fmt.Printf("Seal: %v", seal)
 }
