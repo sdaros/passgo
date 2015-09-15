@@ -1,8 +1,8 @@
-package passgo
+package main
 
 import (
-	"github.com/sdaros/passgo/sealer"
 	"encoding/json"
+	"github.com/sdaros/passgo/sealer"
 )
 
 type secret struct {
@@ -20,11 +20,8 @@ func (sec secret) String() string {
 	return string(result[:])
 }
 
-func (secret *secret) seal() []byte {
-	implementation := sealer.NaclSecretbox{};
-	envelope, err := implementation.Seal();
-	if err != nil {
-		panic(err)
-	}
-	return envelope
+func (secret *secret) Seal() (envelope []byte) {
+	implementation := &sealer.NaclSecretbox{}
+	seal := sealer.Use(implementation)
+	return seal()
 }

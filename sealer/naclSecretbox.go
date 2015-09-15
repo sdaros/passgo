@@ -5,10 +5,13 @@ import (
 )
 
 type NaclSecretbox struct {
-	Options	[]string
+	Options []string
+}
+type Foo struct {
+	Options []string
 }
 
-func (naclSecretbox *NaclSecretbox) Seal() ([]byte, error) {
+func (naclSecretbox *NaclSecretbox) Seal() (envelope []byte) {
 	// TODO: implement nacl/secretbox
-	return []byte(nil), nil
+	return []byte(nil)
 }

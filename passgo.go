@@ -1,8 +1,7 @@
-package passgo
-
+package main
 import (
-	"fmt"
 	"encoding/hex"
+	"fmt"
 )
 
 func main() {
@@ -10,7 +9,6 @@ func main() {
 	tag := tag("facebook")
 	stamp := &stamp{stamper.lick(tag)}
 	fmt.Printf("Secret: %v,\nSealed Secret (Stamp): %v,\n",
-	secret, hex.EncodeToString(stamp.content))
-	seal := secret.seal()
-	fmt.Printf("Seal: %v", seal)
+		secret, hex.EncodeToString(stamp.content))
+	fmt.Printf("Seal: %v", secret.Seal())
 }

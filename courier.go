@@ -1,4 +1,4 @@
-package passgo
+package main
 
 import (
 	"golang.org/x/crypto/ssh/terminal"

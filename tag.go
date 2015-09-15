@@ -1,4 +1,4 @@
-package passgo
+package main
 
 import (
 	"golang.org/x/crypto/scrypt"
@@ -17,4 +17,3 @@ func (tag tag) lick() []byte {
 	}
 	return content
 }
-

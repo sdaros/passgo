@@ -1,4 +1,4 @@
-package passgo
+package main
 
 type stamper interface {
 	lick() []byte
