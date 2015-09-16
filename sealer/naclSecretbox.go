@@ -5,10 +5,10 @@ import (
 )
 
 type NaclSecretbox struct {
-	Options []string
+	Params []string
 }
 
-func (naclSecretbox *NaclSecretbox) Seal(secret []byte) (content []byte) {
+func (naclSecretbox *NaclSecretbox) Seal(secret []byte) (content []byte, err error) {
 	// TODO: implement nacl/secretbox
-	return secret
+	return secret, nil
 }

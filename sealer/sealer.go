@@ -12,7 +12,7 @@ var (
 )
 
 // TODO: should return a sealedSecret instead of a []byte
-type seal func([]byte) []byte
+type seal func([]byte) ([]byte, error)
 
 // TODO: implement options []string as second parameter
 func Use(implementation interface{}) seal {

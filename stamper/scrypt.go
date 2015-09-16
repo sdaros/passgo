@@ -1,22 +1,32 @@
-// Packages  Stamper implements a password-based key derivation function
-// to stamp user-supplied content (ex. password) into a bulla.
 package stamper
 
 import (
 	sc "golang.org/x/crypto/scrypt" 
-	"golang.org/x/crypto/sha3"
+	"crypto/rand"
 )
-
 type Scrypt struct {
-	Options []string
+	Params []string
 }
-func (scrypt *Scrypt) Stamp(content []byte) (Bulla) {
+const (
+	saltSize = 32
+)
+func (scrypt *Scrypt) Stamp(content []byte) (*Bulla, error) {
 	// TODO: Convert to MAC using key
-	salt := make([]byte, 64)
-	sha3.ShakeSum256(salt, content)
+	salt, err := generateSalt()
+	if err != nil {
+		return nil, err
+	}
 	result, err := sc.Key(content, salt, 65536, 8, 1, 32)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return Bulla(result)
+	return &Bulla{salt: salt, content: result}, nil
+}
+func generateSalt() ([]byte, error) {
+	salt := make([]byte, saltSize)
+	_, err := rand.Read(salt)
+	if err != nil {
+		return nil, err
+	}
+	return salt, nil
 }

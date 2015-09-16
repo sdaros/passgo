@@ -21,13 +21,21 @@ func (secret *secret) String() string {
 	return string(result[:])
 }
 
-func (secret *secret) Seal() (sealedSecret []byte) {
+func (secret *secret) Seal() (sealedSecret []byte, err error) {
 	implementation := new(sealer.NaclSecretbox)
 	seal := sealer.Use(implementation)
-	return seal([]byte(secret.String()))
+	sealedSecret, err = seal([]byte(secret.String()))
+	if err != nil {
+		return nil, err
+	}
+	return sealedSecret, nil
 }
-func (secret *secret) Stamp() (stamper.Bulla) {
+func (secret *secret) Stamp() (*stamper.Bulla, error) {
 	implementation := new(stamper.Scrypt)
 	stamp := stamper.Use(implementation)
-	return stamp([]byte(secret.String()))
+	result, err := stamp([]byte(secret.String()))
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

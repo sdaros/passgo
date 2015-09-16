@@ -8,10 +8,16 @@ import (
 
 func main() {
 	facebook := &secret{"https://facebook.com", "p@ssw0rd", "username", "note"}
-	sealedSecret := facebook.Seal()
+	sealedSecret, err := facebook.Seal()
+	if err != nil {
+		panic(err)
+	}
 	result := new(secret)
-	stampedResult := facebook.Stamp()
-	err := json.Unmarshal(sealedSecret, result)
+	stampedResult, err := facebook.Stamp()
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(sealedSecret, result)
 	if err != nil {
 		panic(err)
 	}

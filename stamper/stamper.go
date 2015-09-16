@@ -14,9 +14,12 @@ var  (
 
 // Bulla is the name for the hash returned by the stamp function.
 // The Bulla can be used as a `key` in symmetric encryption.
-type Bulla []byte
+type Bulla struct {
+	salt []byte
+	content []byte
+}
 
-type stamp func([]byte) Bulla
+type stamp func([]byte) (*Bulla, error)
 
 //TODO: implement options []string as second parameter
 func Use(implementation interface{}) stamp {
