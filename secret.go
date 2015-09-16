@@ -22,12 +22,12 @@ func (secret *secret) String() string {
 }
 
 func (secret *secret) Seal() (sealedSecret []byte) {
-	implementation := &sealer.NaclSecretbox{}
+	implementation := new(sealer.NaclSecretbox)
 	seal := sealer.Use(implementation)
 	return seal([]byte(secret.String()))
 }
 func (secret *secret) Stamp() (stamper.Bulla) {
-	implementation := &stamper.Scrypt{}
+	implementation := new(stamper.Scrypt)
 	stamp := stamper.Use(implementation)
 	return stamp([]byte(secret.String()))
 }

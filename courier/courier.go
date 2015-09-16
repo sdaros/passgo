@@ -1,11 +1,11 @@
 // Package Courier Proxies all requrest from the client 
 // for example, seal() and stamp() ...
+package courier
 
 import (
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
 )
-package courier
 
 // Label can be used to tag the contents of an envelope.
 type label string

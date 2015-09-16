@@ -6,7 +6,7 @@ import  (
 )
 
 func UseNaclSecretboxImplementationReturnsSeal(t *testing.T) {
-	seal := Use(&NaclSecretbox{})
+	seal := Use(new(NaclSecretbox))
 	if reflect.TypeOf(seal).String() != "sealer.seal" {
 		t.Error("Expected function seal, got ", reflect.TypeOf(seal).String())
 	}
