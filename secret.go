@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/sdaros/passgo/sealer"
+	"github.com/sdaros/passgo/stamper"
 )
 
 type secret struct {
@@ -12,16 +13,21 @@ type secret struct {
 	Note     string
 }
 
-func (sec secret) String() string {
-	result, err := json.MarshalIndent(sec, "", "\t")
+func (secret *secret) String() string {
+	result, err := json.MarshalIndent(secret, "", "\t")
 	if err != nil {
 		panic(err)
 	}
 	return string(result[:])
 }
 
-func (secret *secret) Seal() (envelope []byte) {
+func (secret *secret) Seal() (sealedSecret []byte) {
 	implementation := &sealer.NaclSecretbox{}
 	seal := sealer.Use(implementation)
-	return seal()
+	return seal([]byte(secret.String()))
+}
+func (secret *secret) Stamp() (stamper.Bulla) {
+	implementation := &stamper.Scrypt{}
+	stamp := stamper.Use(implementation)
+	return stamp([]byte(secret.String()))
 }

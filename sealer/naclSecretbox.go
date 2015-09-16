@@ -7,11 +7,8 @@ import (
 type NaclSecretbox struct {
 	Options []string
 }
-type Foo struct {
-	Options []string
-}
 
-func (naclSecretbox *NaclSecretbox) Seal() (envelope []byte) {
+func (naclSecretbox *NaclSecretbox) Seal(secret []byte) (content []byte) {
 	// TODO: implement nacl/secretbox
-	return []byte(nil)
+	return secret
 }

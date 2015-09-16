@@ -11,9 +11,10 @@ var (
 	ErrUnrecognizedImplementation = errors.New("sealer: unrecognized implementation chosen")
 )
 
-type seal func() []byte
+// TODO: should return a sealedSecret instead of a []byte
+type seal func([]byte) []byte
 
-//TODO: implement options []string as second parameter
+// TODO: implement options []string as second parameter
 func Use(implementation interface{}) seal {
 	switch t := implementation.(type) {
 	default:
