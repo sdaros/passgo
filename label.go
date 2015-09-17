@@ -23,7 +23,10 @@ func (label *label) String() (string) {
 
 func (label *label) Stamp() (*stamper.Bulla, error) {
 	implementation := new(stamper.Scrypt)
-	stamp := stamper.Use(implementation)
+	stamp, err := stamper.Use(implementation)
+	if err != nil {
+		return nil, err
+	}
 	bulla, err := stamp([]byte(label.String()))
 	if err != nil {
 		return nil, err

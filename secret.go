@@ -35,7 +35,10 @@ func (secret *secret) Seal() (sealedSecret []byte, err error) {
 }
 func (secret *secret) Stamp() (*stamper.Bulla, error) {
 	implementation := new(stamper.Scrypt)
-	stamp := stamper.Use(implementation)
+	stamp, err := stamper.Use(implementation)
+	if err != nil {
+		return nil, err
+	}
 	bulla, err :=  stamp([]byte(secret.String()))
 	if err != nil {
 		return nil, err

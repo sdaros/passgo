@@ -4,7 +4,6 @@ package stamper
 
 import (
 	"errors"
-	"fmt"
 )
 
 var  (
@@ -22,12 +21,11 @@ type Bulla struct {
 type stamp func([]byte) (*Bulla, error)
 
 // TODO: implement Params []string as second parameter
-func Use(implementation interface{}) stamp {
+func Use(implementation interface{}) (stamp, error) {
 	switch t := implementation.(type) {
 	default:
-		// TODO: log error and choose default implementation
-		panic(fmt.Sprintf("%v (%T)", ErrUnrecognizedImplementation, t))
+		return nil, ErrUnrecognizedImplementation
 	case *Scrypt:
-		return t.Stamp
+		return t.Stamp, nil
 	}
 }
