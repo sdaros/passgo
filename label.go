@@ -1,6 +1,32 @@
-// A label
 package main
 
-type label string
+import (
+	"github.com/sdaros/passgo/stamper"
+	"encoding/json"
+	"log"
+	"fmt"
+)
 
-// TODO: implemente Stamp()
+type label struct {
+	Name	string
+}
+
+
+func (label *label) String() (string) {
+	jsonString, err := json.MarshalIndent(label, "", "\t")
+	if err != nil {
+		log.Fatalln(err)
+		return fmt.Sprint(label)
+	}
+	return string(jsonString[:])
+}
+
+func (label *label) Stamp() (*stamper.Bulla, error) {
+	implementation := new(stamper.Scrypt)
+	stamp := stamper.Use(implementation)
+	bulla, err := stamp([]byte(label.String()))
+	if err != nil {
+		return nil, err
+	}
+	return bulla, nil
+}

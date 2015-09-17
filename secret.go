@@ -1,9 +1,11 @@
 package main
 
 import (
-	"encoding/json"
-	"github.com/sdaros/passgo/sealer"
 	"github.com/sdaros/passgo/stamper"
+	"github.com/sdaros/passgo/sealer"
+	"encoding/json"
+	"log"
+	"fmt"
 )
 
 type secret struct {
@@ -13,12 +15,13 @@ type secret struct {
 	Note     string
 }
 
-func (secret *secret) String() string {
-	result, err := json.MarshalIndent(secret, "", "\t")
+func (secret *secret) String() (string) {
+	jsonString, err := json.MarshalIndent(secret, "", "\t")
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
+		return fmt.Sprint(secret)
 	}
-	return string(result[:])
+	return string(jsonString[:])
 }
 
 func (secret *secret) Seal() (sealedSecret []byte, err error) {
@@ -33,9 +36,9 @@ func (secret *secret) Seal() (sealedSecret []byte, err error) {
 func (secret *secret) Stamp() (*stamper.Bulla, error) {
 	implementation := new(stamper.Scrypt)
 	stamp := stamper.Use(implementation)
-	result, err := stamp([]byte(secret.String()))
+	bulla, err :=  stamp([]byte(secret.String()))
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+	return bulla, nil
 }

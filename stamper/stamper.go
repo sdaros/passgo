@@ -21,10 +21,11 @@ type Bulla struct {
 
 type stamp func([]byte) (*Bulla, error)
 
-//TODO: implement options []string as second parameter
+// TODO: implement Params []string as second parameter
 func Use(implementation interface{}) stamp {
 	switch t := implementation.(type) {
 	default:
+		// TODO: log error and choose default implementation
 		panic(fmt.Sprintf("%v (%T)", ErrUnrecognizedImplementation, t))
 	case *Scrypt:
 		return t.Stamp
