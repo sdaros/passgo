@@ -8,7 +8,7 @@ import (
 
 func main() {
 	facebook := &secret{"https://facebook.com", "p@ssw0rd", "username", "note"}
-	sealedSecret, err := facebook.Seal()
+	content, err := facebook.Seal()
 	if err != nil {
 		panic(err)
 	}
@@ -17,7 +17,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal(sealedSecret, result)
+	err = json.Unmarshal(content, result)
 	if err != nil {
 		panic(err)
 	}

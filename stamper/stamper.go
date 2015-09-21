@@ -1,5 +1,4 @@
-// Package Stamper implements a password-based key derivation function to stamp 
-// user-supplied content, for example a password, and returns the resulting hash.
+// Package Stamper implements a password-based key derivation function to stamp user-supplied content, for example a password, and returns the resulting hash.
 package stamper
 
 import (
@@ -18,7 +17,7 @@ type Bulla struct {
 	content []byte
 }
 
-type stamp func([]byte) (*Bulla, error)
+type stamp func(...interface{}) (*Bulla, error)
 
 // TODO: implement Params []string as second parameter
 func Use(implementation interface{}) (stamp, error) {

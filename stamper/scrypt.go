@@ -1,8 +1,10 @@
 package stamper
 
 import (
-	sc "golang.org/x/crypto/scrypt" 
+	sc "golang.org/x/crypto/scrypt"
 	"crypto/rand"
+	_"bytes"
+	_"fmt"
 )
 type Scrypt struct {
 	Params []string
@@ -10,8 +12,8 @@ type Scrypt struct {
 const (
 	saltSize = 32
 )
-func (scrypt *Scrypt) Stamp(content []byte) (*Bulla, error) {
-	// TODO: Convert to MAC using key
+func (scrypt *Scrypt) Stamp(a ...interface{}) (*Bulla, error) {
+	var content []byte
 	salt, err := generateSalt()
 	if err != nil {
 		return nil, err

@@ -11,7 +11,6 @@ type label struct {
 	Name	string
 }
 
-
 func (label *label) String() (string) {
 	jsonString, err := json.MarshalIndent(label, "", "\t")
 	if err != nil {
@@ -27,7 +26,7 @@ func (label *label) Stamp() (*stamper.Bulla, error) {
 	if err != nil {
 		return nil, err
 	}
-	bulla, err := stamp([]byte(label.String()))
+	bulla, err := stamp(label)
 	if err != nil {
 		return nil, err
 	}
