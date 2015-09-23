@@ -1,26 +1,23 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	_ "github.com/sdaros/passgo/stamper"
+	"github.com/sdaros/passgo/stamper"
+	"github.com/sdaros/passgo/sealer"
 )
 
 func main() {
-	facebook := &secret{"https://facebook.com", "p@ssw0rd", "username", "note"}
-	content, err := facebook.Seal()
+	lbl := &Label{"https://lbl.com"}
+	content, err := stamper.ScryptStamper.Stamp(lbl)
 	if err != nil {
 		panic(err)
 	}
-	result := new(secret)
-	stampedResult, err := facebook.Stamp()
+	fmt.Printf("Label: %v,\nStamped Label: %v\n", lbl, content)
+	sct := &Secret{"https://facebook.com", "p@ssw0rd", "user", "foob"}
+	envelope, err := sealer.NaclSecretboxSealer.Seal(sct)
 	if err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal(content, result)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Secret: %v,\nSealed Secret: %v,\nStamped Secret: %v\n",
-		facebook, result, stampedResult)
+	fmt.Printf("Secret: %v,\nSealed Secret: %v\n", sct, envelope)
+
 }

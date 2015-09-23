@@ -2,24 +2,19 @@ package sealer
 
 import (
 	"errors"
-	"fmt"
 )
 
+// TODO: return these errors eventually
 var (
 	ErrSeal = errors.New("sealer: sealing failed!")
 	ErrOpen = errors.New("sealer: opening failed!")
-	ErrUnrecognizedImplementation = errors.New("sealer: unrecognized implementation chosen")
 )
 
-// TODO: should return a sealedSecret instead of a []byte
-type seal func([]byte) ([]byte, error)
-
-// TODO: refactor to use stamper as interface
-func Use(implementation interface{}) seal {
-	switch t := implementation.(type) {
-	default:
-		panic(fmt.Sprintf("%v (%T)", ErrUnrecognizedImplementation, t))
-	case *NaclSecretbox:
-		return t.Seal
-	}
+// postage is sealed (authenticated encryption) by a sealer implementation
+// postage is usually a secret represented as a JSON string
+type postage interface {
+	String() string
 }
+
+// naclSecretboxSealer uses nacl/secretbox for symmetric encryption
+var NaclSecretboxSealer = new(NaclSecretbox)

@@ -5,26 +5,16 @@ import (
 	"errors"
 )
 
+// TODO: return this error eventually
 var  (
 	ErrStamp = errors.New("stamper: stamping failed!")
-	ErrUnrecognizedImplementation = errors.New("stamper: unrecognized implementation chosen")
 )
 
-// Bulla is the name for the hash returned by the stamp function.
-// The Bulla can be used as a `key` in symmetric encryption.
-type Bulla struct {
-	salt []byte
-	content []byte
+// postage is hashed (using PBKDF) by a stamper implementation.
+// postage is usually a Label represented as a JSON string.
+type postage interface {
+	String() string
 }
 
-type stamp func(...interface{}) (*Bulla, error)
-
-// TODO: implement Params []string as second parameter
-func Use(implementation interface{}) (stamp, error) {
-	switch t := implementation.(type) {
-	default:
-		return nil, ErrUnrecognizedImplementation
-	case *Scrypt:
-		return t.Stamp, nil
-	}
-}
+// Scryptstamper uses crypto/scrypt as its PBKDF
+var ScryptStamper = new(Scrypt)
