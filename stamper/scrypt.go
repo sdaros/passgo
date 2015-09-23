@@ -5,28 +5,32 @@ import (
 	"crypto/rand"
 )
 type Scrypt struct {
-	// TODO: Implement args
+	// n and r control scrypt's memory requirements
+	n int
+	r int
+	// p controls whether scrypt can run on multiple processors
+	p int
+	// length in bytes
+	len int
 }
 
 const (
-	saltSize = 32
+	saltLength = 32
 )
 
 func (s *Scrypt) Stamp(postage postage) (*Bulla, error) {
-	var content []byte
 	salt, err := generateSalt()
 	if err != nil {
 		return nil, err
 	}
-	copy(content[:], []byte(postage.String()))
-	result, err := scrypt.Key(content, salt, 65536, 8, 1, 32)
+	result, err := scrypt.Key([]byte(postage.String()), salt, s.n, s.r, s.p, s.len)
 	if err != nil {
 		return nil, err
 	}
 	return &Bulla{Salt: salt, Content: result}, nil
 }
 func generateSalt() ([]byte, error) {
-	salt := make([]byte, saltSize)
+	salt := make([]byte, saltLength)
 	_, err := rand.Read(salt)
 	if err != nil {
 		return nil, err
