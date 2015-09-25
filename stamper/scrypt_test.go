@@ -14,7 +14,7 @@ func (tv testVector) String() string {
 }
 
 // Test against the test vectors from the official scrypt specification.
-func TestCryptoScryptKeyAgainstTestVectorEmptyString(t *testing.T) {
+func Test_crypto_scrypt_key_against_test_vector_empty_string(t *testing.T) {
   var (
     password testVector
     salt testVector
@@ -37,7 +37,7 @@ func TestCryptoScryptKeyAgainstTestVectorEmptyString(t *testing.T) {
     t.Errorf("Expected crypto/scrypt to output %x, got %x", testValue, result)
   }
 }
-func TestCryptoScryptKeyAgainstTestVectorPassword(t *testing.T) {
+func Test_crypto_scrypt_key_against_test_vector_password(t *testing.T) {
   var (
     password testVector
     salt testVector
@@ -60,7 +60,7 @@ func TestCryptoScryptKeyAgainstTestVectorPassword(t *testing.T) {
     t.Errorf("Expected crypto/scrypt to output %x, got %x", testValue, result)
   }
 }
-func TestCryptoScryptKeyAgainstTestVectorPleaseLetMeIn(t *testing.T) {
+func Test_crypto_scrypt_key_against_test_vector_please_let_me_in(t *testing.T) {
   var (
     password testVector
     salt testVector
@@ -83,7 +83,7 @@ func TestCryptoScryptKeyAgainstTestVectorPleaseLetMeIn(t *testing.T) {
     t.Errorf("Expected crypto/scrypt to output %x, got %x", testValue, result)
   }
 }
-func TestCryptoScryptKeyAgainstTestVectorPleaseLetMeInLong(t *testing.T) {
+func Test_crypto_scrypt_key_against_test_vector_please_let_me_in_long(t *testing.T) {
   var (
     password testVector
     salt testVector
@@ -108,7 +108,7 @@ func TestCryptoScryptKeyAgainstTestVectorPleaseLetMeInLong(t *testing.T) {
 }
 // Test that the Stamp() Method for our Scrypt implementation
 // returns the same content as golang.org/x/crypto/scrypt.
-func TestStampAgainstCryptoScryptKey(t *testing.T) {
+func Test_stamp_against_crypto_scrypt_key(t *testing.T) {
   var tv testVector
   tv = "StampMe!"
   scryptStamper := &Scrypt{n: 16, r: 1, p: 1, len: 32}

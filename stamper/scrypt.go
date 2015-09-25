@@ -14,12 +14,8 @@ type Scrypt struct {
 	len int
 }
 
-const (
-	saltLength = 32
-)
-
 func (s *Scrypt) Stamp(postage postage) (*Bulla, error) {
-	salt, err := generateSalt()
+	salt, err := generateSalt(s.len)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +25,8 @@ func (s *Scrypt) Stamp(postage postage) (*Bulla, error) {
 	}
 	return &Bulla{Salt: salt, Content: result}, nil
 }
-func generateSalt() ([]byte, error) {
+
+func generateSalt(saltLength int) ([]byte, error) {
 	salt := make([]byte, saltLength)
 	_, err := rand.Read(salt)
 	if err != nil {
