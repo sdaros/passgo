@@ -19,5 +19,10 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("Secret: %v,\nSealed Secret: %v\n", sct, envelope)
+	unsealedSecret, err := sealer.NaclSecretboxSealer.Open(envelope)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("UnsealedSecret: %s", unsealedSecret)
 
 }
