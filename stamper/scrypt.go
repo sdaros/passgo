@@ -17,11 +17,11 @@ type Scrypt struct {
 func (s *Scrypt) Stamp(postage postage) (*Bulla, error) {
 	salt, err := generateSalt(s.len)
 	if err != nil {
-		return nil, err
+		return nil, ErrStamp
 	}
 	result, err := scrypt.Key([]byte(postage.String()), salt, s.n, s.r, s.p, s.len)
 	if err != nil {
-		return nil, err
+		return nil, ErrStamp
 	}
 	return &Bulla{Salt: salt, Content: result}, nil
 }
@@ -30,7 +30,7 @@ func generateSalt(saltLength int) ([]byte, error) {
 	salt := make([]byte, saltLength)
 	_, err := rand.Read(salt)
 	if err != nil {
-		return nil, err
+		return nil, ErrStamp
 	}
 	return salt, nil
 }

@@ -35,5 +35,12 @@ func Test_stamp_against_crypto_scrypt_key(t *testing.T) {
 // Test that the Stamp() Method for our Scrypt implementation
 // returns a stamper.ErrStamp when called with bad params.
 func Test_stamp_returns_error_on_bad_input_parameters(t *testing.T) {
-  // TODO
+  var tv testVector
+  tv = "StampMe!"
+  scryptStamper := &Scrypt{n: 17, r: 1, p: 1, len: 32}
+  _, err := scryptStamper.Stamp(tv)
+  if err == nil {
+  		t.Error("Expected an error on bad params to " +
+        "Scrypt Implementation, got nil error")
+  }
 }
