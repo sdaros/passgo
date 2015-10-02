@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	_"github.com/sdaros/passgo/courier"
 	"github.com/sdaros/passgo/stamper"
 	"github.com/sdaros/passgo/sealer"
+	"github.com/sdaros/passgo/cmd"
 )
 
 func main() {
@@ -18,11 +20,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	fmt.Printf("Secret: %v,\nSealed Secret: %v\n", sct, envelope)
 	unsealedSecret, err := sealer.NaclSecretboxSealer.Open(envelope)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("UnsealedSecret: %s", unsealedSecret)
+
 
 }
