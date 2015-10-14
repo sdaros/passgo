@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	_"github.com/sdaros/passgo/courier"
+	_ "github.com/sdaros/passgo/courier"
 	"github.com/sdaros/passgo/stamper"
 	"github.com/sdaros/passgo/sealer"
-	_"github.com/sdaros/passgo/cmd"
+	_ "github.com/sdaros/passgo/cmd"
 )
 
 func main() {
