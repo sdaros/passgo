@@ -5,7 +5,7 @@ import (
 	_"github.com/sdaros/passgo/courier"
 	"github.com/sdaros/passgo/stamper"
 	"github.com/sdaros/passgo/sealer"
-	"github.com/sdaros/passgo/cmd"
+	_"github.com/sdaros/passgo/cmd"
 )
 
 func main() {

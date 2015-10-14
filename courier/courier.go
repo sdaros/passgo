@@ -1,4 +1,4 @@
-// Package Courier Proxies all requrest from the client
+// Package Courier Proxies all requests from the client
 // for example, seal() and stamp() ...
 package courier
 

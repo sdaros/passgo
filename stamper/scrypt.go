@@ -1,8 +1,8 @@
 package stamper
 
 import (
+	"github.com/sdaros/passgo/entropy"
 	"golang.org/x/crypto/scrypt"
-	"crypto/rand"
 )
 type Scrypt struct {
 	// n and r control scrypt's memory requirements
@@ -28,7 +28,7 @@ func (s *Scrypt) Stamp(postage postage) (*Bulla, error) {
 
 func generateSalt(saltLength int) ([]byte, error) {
 	salt := make([]byte, saltLength)
-	_, err := rand.Read(salt)
+	_, err := entropy.Read(salt)
 	if err != nil {
 		return nil, ErrStamp
 	}

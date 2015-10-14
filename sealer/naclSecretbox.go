@@ -2,7 +2,7 @@ package sealer
 
 import (
 	"golang.org/x/crypto/nacl/secretbox"
-	"crypto/rand"
+	"github.com/sdaros/passgo/entropy"
 )
 
 const (
@@ -48,7 +48,7 @@ func (sb *NaclSecretbox) Open(env *Envelope) (secret []byte, err error) {
 
 func generateNonce() (*[NonceLength]byte, error) {
 	nonce := new([NonceLength]byte)
-	_, err := rand.Read(nonce[:])
+	_, err := entropy.Read(nonce[:])
 	if err != nil {
 		return nil, err
 	}
