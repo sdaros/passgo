@@ -1,6 +1,7 @@
 package stamper
 
 import (
+  "github.com/sdaros/passgo/entropy"
   "golang.org/x/crypto/scrypt"
   "testing"
   "bytes"
@@ -16,7 +17,8 @@ func (tv testVector) String() string {
 func Test_stamp_against_crypto_scrypt_key(t *testing.T) {
   var tv testVector
   tv = "StampMe!"
-  scryptStamper := &Scrypt{n: 16, r: 1, p: 1, len: 32}
+  scryptStamper := &Scrypt{n: 16, r: 1, p: 1, len: 32,
+    entropyImplementation: entropy.CryptoRand}
   stampedByScryptStamper, err := scryptStamper.Stamp(tv)
   if err != nil {
     t.Error("stamper/scrypt returned an error: ", err)
@@ -37,7 +39,8 @@ func Test_stamp_against_crypto_scrypt_key(t *testing.T) {
 func Test_stamp_returns_error_on_bad_input_parameters(t *testing.T) {
   var tv testVector
   tv = "StampMe!"
-  scryptStamper := &Scrypt{n: 17, r: 1, p: 1, len: 32}
+  scryptStamper := &Scrypt{n: 17, r: 1, p: 1, len: 32,
+    entropyImplementation: entropy.CryptoRand}
   _, err := scryptStamper.Stamp(tv)
   if err == nil {
   		t.Error("Expected an error on bad params to " +

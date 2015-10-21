@@ -10,12 +10,12 @@ const (
 	NonceLength = 24
 )
 type NaclSecretbox struct {
-	// TODO: implement args
+  entropyImplementation entropy.Entropy
 }
 
 func (sb *NaclSecretbox) Seal(post postage) (env *Envelope, err error) {
 	// TODO: implement nacl/secretbox
-	nonce, err := generateNonce()
+	nonce, err := generateNonce(sb.entropyImplementation)
 	if err != nil {
 		return nil, err
 	}
@@ -46,9 +46,9 @@ func (sb *NaclSecretbox) Open(env *Envelope) (secret []byte, err error) {
 
 }
 
-func generateNonce() (*[NonceLength]byte, error) {
+func generateNonce(ent entropy.Entropy) (*[NonceLength]byte, error) {
 	nonce := new([NonceLength]byte)
-	_, err := entropy.Read(nonce[:])
+	_, err := ent.Read(nonce[:])
 	if err != nil {
 		return nil, err
 	}

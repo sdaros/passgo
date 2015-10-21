@@ -12,10 +12,11 @@ type Scrypt struct {
 	p int
 	// length in bytes
 	len int
+	entropyImplementation entropy.Entropy
 }
 
 func (s *Scrypt) Stamp(postage postage) (*Bulla, error) {
-	salt, err := generateSalt(s.len)
+	salt, err := generateSalt(s.len, s.entropyImplementation)
 	if err != nil {
 		return nil, ErrStamp
 	}
@@ -26,9 +27,9 @@ func (s *Scrypt) Stamp(postage postage) (*Bulla, error) {
 	return &Bulla{Salt: salt, Content: result}, nil
 }
 
-func generateSalt(saltLength int) ([]byte, error) {
+func generateSalt(saltLength int, ent entropy.Entropy) ([]byte, error) {
 	salt := make([]byte, saltLength)
-	_, err := entropy.Read(salt)
+	_, err := ent.Read(salt)
 	if err != nil {
 		return nil, ErrStamp
 	}
