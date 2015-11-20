@@ -5,7 +5,8 @@ import (
 	_ "github.com/sdaros/passgo/courier"
 	"github.com/sdaros/passgo/stamper"
 	"github.com/sdaros/passgo/sealer"
-	_ "github.com/sdaros/passgo/cmd"
+	"github.com/sdaros/passgo/cmd"
+	"github.com/sdaros/passgo/entropy"
 )
 
 func main() {
@@ -26,7 +27,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("UnsealedSecret: %s", unsealedSecret)
+	fmt.Printf("UnsealedSecret: %s\n", unsealedSecret)
 
+	gen := &cmd.Generate{false, 30, entropy.CryptoRand}
+	pass, err := gen.Execute()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("Generated password: %v\n", string(pass))
 
 }
