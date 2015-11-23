@@ -12,8 +12,8 @@ type testVector string
 func (tv testVector) String() string {
     return fmt.Sprintf("%v", string(tv))
 }
-// Test that the Stamp() Method for our Scrypt implementation
-// returns the same content as golang.org/x/crypto/scrypt.
+// Stamp Method for our Scrypt implementation should returns
+// the same content as golang.org/x/crypto/scrypt.
 func Test_stamp_against_crypto_scrypt_key(t *testing.T) {
   var tv testVector
   tv = "StampMe!"
@@ -34,8 +34,8 @@ func Test_stamp_against_crypto_scrypt_key(t *testing.T) {
       stampedByCryptoScrypt)
   }
 }
-// Test that the Stamp() Method for our Scrypt implementation
-// returns a stamper.ErrStamp when called with bad params.
+// Stamp() Method for our Scrypt implementation should
+// return a stamper.ErrStamp when called with bad params.
 func Test_stamp_returns_error_on_bad_input_parameters(t *testing.T) {
   var tv testVector
   tv = "StampMe!"

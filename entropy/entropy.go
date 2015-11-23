@@ -7,10 +7,10 @@ import (
 )
 
 type Entropy interface {
-  // adds random bytes from the entropy pool to a byte slice.
+  // adds random bytes from the entropy pool.
   io.Reader
-  // a randomly generated password from the entropy pool.
-  Password(args interface{}) ([]rune, error)
+  // selects a random integer from a defined range.
+  Int(max int) (n int64, err error)
 }
 // CryptoRand uses crypto/rand in the standard library
 // to collect entropy

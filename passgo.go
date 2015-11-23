@@ -29,8 +29,8 @@ func main() {
 	}
 	fmt.Printf("UnsealedSecret: %s\n", unsealedSecret)
 
-	gen := &cmd.Generate{false, 30, entropy.CryptoRand}
-	pass, err := gen.Execute()
+	pwcmd := &cmd.Password{false, 30, entropy.CryptoRand}
+	pass, err := pwcmd.Execute()
 	if err != nil {
 		fmt.Println(err)
 	}
