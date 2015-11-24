@@ -29,7 +29,8 @@ func main() {
 	}
 	fmt.Printf("UnsealedSecret: %s\n", unsealedSecret)
 
-	pwcmd := &cmd.Password{false, 30, entropy.CryptoRand}
+	pwcmd := &cmd.Password{NoSymbols: false, PasswordLength: 30,
+		 EntropyImplementation: entropy.CryptoRand}
 	pass, err := pwcmd.Execute()
 	if err != nil {
 		fmt.Println(err)

@@ -42,7 +42,7 @@ type Password struct {
   EntropyImplementation entropy.Entropy
 }
 
-func NewPassword() (*Password) {
+func NewPasswordWithDefaults() (*Password) {
   // set parameter defaults.
   NoSymbols := false
   PasswordLength := 15
@@ -51,7 +51,8 @@ func NewPassword() (*Password) {
   return passwordCommand
 }
 
-// Execute runs the Password Command.
+// Execute valides parameters of Password
+// and then runs the Password Command.
 func (p *Password) Execute() (password []rune, err error) {
   if err := p.validateParameters(); err != nil {
     return nil, err
