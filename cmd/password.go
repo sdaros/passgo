@@ -2,6 +2,7 @@ package cmd
 
 import (
   "github.com/sdaros/passgo/entropy"
+_  "reflect"
   "errors"
   "fmt"
 )
@@ -38,23 +39,13 @@ var (
 // based on the parameters provided to it.
 type Password struct {
   NoSymbols bool
-  PasswordLength int
+  PasswordLength int64
   EntropyImplementation entropy.Entropy
 }
 
-func NewPasswordWithDefaults() (*Password) {
-  // set parameter defaults.
-  NoSymbols := false
-  PasswordLength := 15
-  EntropyImplementation := entropy.CryptoRand
-  passwordCommand := &Password{NoSymbols, PasswordLength, EntropyImplementation}
-  return passwordCommand
-}
-
-// Execute valides parameters of Password
-// and then runs the Password Command.
-func (p *Password) Execute() (password []rune, err error) {
-  if err := p.validateParameters(); err != nil {
+// Execute validates parameters of Password and runs the Password Command.
+func (p *Password) Execute(options ...interface{}) (password []rune, err error) {
+  if err = p.validate(options...); err != nil {
     return nil, err
   }
   password, err = p.Password()
@@ -64,17 +55,6 @@ func (p *Password) Execute() (password []rune, err error) {
   return password, nil
 }
 
-// validateParameters validates the fields of the
-// Password struct against predefined rules.
-func (p *Password) validateParameters() (error) {
-  if p.PasswordLength < passwordLengthMin || p.PasswordLength > passwordLengthMax {
-    err := fmt.Errorf( "Password length must be between %v and %v characters",
-      passwordLengthMin, passwordLengthMax)
-    return err
-  }
-  return nil
-}
-
 // Password returns a password by selecting random
 // elements from an ASCII subset (runePool).
 func (p *Password) Password() (password []rune, err error) {
@@ -82,6 +62,29 @@ func (p *Password) Password() (password []rune, err error) {
     return p.composePassword(runesNoSymbols)
   }
   return p.composePassword(runesWithSymbols)
+}
+
+// validate validates the options for the Password Command against predefined rules.
+func (p *Password) validate(options ...interface{}) error {
+  noSymbols := *options[0].(*bool)
+  passwordLength := *options[1].(*int)
+  entropyImplementation := *options[2].(*string)
+  if passwordLength < passwordLengthMin || passwordLength > passwordLengthMax {
+    err := fmt.Errorf( "Password length must be between %v and %v characters",
+    passwordLengthMin, passwordLengthMax)
+    return err
+  }
+  switch entropyImplementation {
+  case "cryptoRand":
+    p.EntropyImplementation = entropy.CryptoRand
+  default:
+    err := fmt.Errorf("the specified entropy implementation, %v does not exist",
+    entropyImplementation)
+    return err
+  }
+  p.PasswordLength = int64(passwordLength)
+  p.NoSymbols = noSymbols
+  return nil
 }
 
 // composePassword of passwordLength by selecting

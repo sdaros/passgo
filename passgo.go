@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/sdaros/passgo/courier"
+	"github.com/sdaros/passgo/courier"
 	"github.com/sdaros/passgo/stamper"
 	"github.com/sdaros/passgo/sealer"
-	"github.com/sdaros/passgo/cmd"
-	"github.com/sdaros/passgo/entropy"
+	_"github.com/sdaros/passgo/entropy"
 )
 
 func main() {
+	if err := courier.ParseOptions(); err != nil {
+		panic(err)
+	}
 	lbl := &Label{"https://lbl.com"}
 	content, err := stamper.ScryptStamper.Stamp(lbl)
 	if err != nil {
@@ -29,12 +31,5 @@ func main() {
 	}
 	fmt.Printf("UnsealedSecret: %s\n", unsealedSecret)
 
-	pwcmd := &cmd.Password{NoSymbols: false, PasswordLength: 30,
-		 EntropyImplementation: entropy.CryptoRand}
-	pass, err := pwcmd.Execute()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("Generated password: %v\n", string(pass))
 
 }

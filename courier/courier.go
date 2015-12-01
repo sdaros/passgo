@@ -7,10 +7,11 @@ import (
 	_"github.com/sdaros/passgo/stamper"
 	_"github.com/sdaros/passgo/sealer"
 	_"github.com/sdaros/passgo/cmd"
+	_"github.com/sdaros/passgo/entropy"
 	"os"
 )
 
-func Password() ([]byte, error) {
+func readFromStdIn() ([]byte, error) {
 	fd := int(os.Stdin.Fd())
 	pass, err := terminal.ReadPassword(fd)
 	if err != nil {
