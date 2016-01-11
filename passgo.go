@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/sdaros/passgo/courier"
-	"github.com/sdaros/passgo/stamper"
+	_ "github.com/sdaros/passgo/entropy"
 	"github.com/sdaros/passgo/sealer"
-	_"github.com/sdaros/passgo/entropy"
+	"github.com/sdaros/passgo/stamper"
 )
 
 func main() {
@@ -30,6 +30,5 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("UnsealedSecret: %s\n", unsealedSecret)
-
 
 }
