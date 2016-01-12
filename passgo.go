@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/sdaros/passgo/courier"
 	_ "github.com/sdaros/passgo/entropy"
 	"github.com/sdaros/passgo/sealer"
@@ -9,6 +8,7 @@ import (
 )
 
 func main() {
+	env := Environment(new(courier.StandardLogger), nil)
 	if err := courier.ParseOptions(); err != nil {
 		panic(err)
 	}
@@ -17,18 +17,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Label: %v,\nStamped Label: %v\n", lbl, content)
+	env.Infof("Label: %v,\nStamped Label: %v\n", lbl, content)
 	sct := &Secret{"https://facebook.com", "p@ssw0rd", "user", "foob"}
 	envelope, err := sealer.NaclSecretboxSealer.Seal(sct)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Secret: %v,\nSealed Secret: %v\n", sct, envelope)
+	env.Infof("Secret: %v,\nSealed Secret: %v\n", sct, envelope)
 	unsealedSecret, err := sealer.NaclSecretboxSealer.Open(envelope)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("UnsealedSecret: %s\n", unsealedSecret)
+	env.Infof("UnsealedSecret: %v", unsealedSecret)
 
 }
