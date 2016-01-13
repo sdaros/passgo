@@ -1,4 +1,4 @@
-package courier
+package environment
 
 import (
 	"log"

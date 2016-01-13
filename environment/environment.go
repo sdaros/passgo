@@ -1,28 +1,30 @@
-package main
+package environment
 
 import (
-	"github.com/sdaros/passgo/courier"
 	ent "github.com/sdaros/passgo/entropy"
 )
 
 // Env is provided as an environment by courier that is accessible
 // to all clients that require its functionality
 type Env struct {
-	courier.Logger
+	Logger
 	ent.Entropy
+	*Registrar
 }
 
 // Initialise the environment
-func Environment(logger courier.Logger, entropy ent.Entropy) *Env {
+func Environment(logger Logger, entropy ent.Entropy, registrar *Registrar) *Env {
 	// TODO: Read from config file
 
 	// nil logger does nothing
 	if logger == nil {
-		logger = new(courier.NullLogger)
+		logger = new(NullLogger)
 	}
-	// nil entropy default to CryptoRand implementation
+	// nil entropy defaults to CryptoRand implementation
 	if entropy == nil {
 		entropy = ent.CryptoRand
 	}
-	return &Env{Logger: logger, Entropy: entropy}
+	// initialize values map in registrar
+	registrar.values = make(map[string]interface{})
+	return &Env{Logger: logger, Entropy: entropy, Registrar: registrar}
 }

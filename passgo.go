@@ -1,16 +1,21 @@
 package main
 
 import (
-	"github.com/sdaros/passgo/courier"
-	_ "github.com/sdaros/passgo/entropy"
+	"github.com/sdaros/passgo/cmd"
+	"github.com/sdaros/passgo/entropy"
+	"github.com/sdaros/passgo/environment"
 	"github.com/sdaros/passgo/sealer"
 	"github.com/sdaros/passgo/stamper"
 )
 
 func main() {
-	env := Environment(new(courier.StandardLogger), nil)
-	if err := courier.ParseOptions(); err != nil {
-		panic(err)
+	env := environment.Environment(
+		new(environment.StandardLogger),
+		entropy.CryptoRand,
+		new(environment.Registrar),
+	)
+	if err := cmd.ParseArgs(env); err != nil {
+		env.Error(err)
 	}
 	lbl := &Label{"https://lbl.com"}
 	content, err := stamper.ScryptStamper.Stamp(lbl)
