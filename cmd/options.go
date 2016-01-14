@@ -37,6 +37,16 @@ type passwordLength struct {
 	value       int
 }
 
+// NewPasswordLength returns a passwordLength option with default values.
+func NewPasswordLength() *passwordLength {
+	pl := &passwordLength{
+		name:        "password-length",
+		description: "Length of password to be generated.",
+		value:       15,
+	}
+	return pl
+}
+
 // String is provided to satisfy flag.Value interface.
 func (pl *passwordLength) String() string {
 	return fmt.Sprint(*pl)
@@ -48,14 +58,14 @@ func (pl *passwordLength) Set(value string) (err error) {
 	if err != nil {
 		return err
 	}
-	if err := validate(length); err != nil {
+	if err := pl.Validate(length); err != nil {
 		return err
 	}
 	pl.value = length
 	return nil
 }
 
-func validate(length int) (err error) {
+func (pl *passwordLength) Validate(length int) (err error) {
 	const passwordLengthMin = 1
 	const passwordLengthMax = 256
 	if length < passwordLengthMin || length > passwordLengthMax {
@@ -71,6 +81,16 @@ type noSymbols struct {
 	name        string
 	description string
 	value       bool
+}
+
+// NewPasswordLength returns a passwordLength option with default values.
+func NewNoSymbols() *noSymbols {
+	ns := &noSymbols{
+		name:        "no-symbols",
+		description: "Use only alphabetic characters",
+		value:       false,
+	}
+	return ns
 }
 
 func (ns *noSymbols) String() string {

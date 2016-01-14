@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"github.com/sdaros/passgo/environment"
-	_ "reflect"
 )
 
 var (
@@ -38,26 +37,45 @@ type Password struct {
 	*environment.Env
 }
 
-// Execute returns a password composed of random elements
-// chosen from a rune pool
+// NewPassword returns a password command with default values
+func NewPassword(env *environment.Env) *Password {
+	password := &Password{
+		name:           "password",
+		description:    "Length of password to be generated.",
+		noSymbols:      NewNoSymbols(),
+		passwordLength: NewPasswordLength(),
+		Env:            env,
+	}
+	return password
+}
+
+// Execute validates command options then returns a password
+// composed of random elements chosen from a rune pool
 func (p *Password) Execute() (password []rune, err error) {
+	p.validate()
 	if p.noSymbols.value {
 		return p.composePassword(runesNoSymbols)
 	}
 	return p.composePassword(runesWithSymbols)
 }
 
+func (p *Password) validate() (err error) {
+	length := p.passwordLength.value
+	if err := p.passwordLength.Validate(length); err != nil {
+		return err
+	}
+	return nil
+}
+
 // composePassword of passwordLength by selecting
 // random elements from an ASCII subset (runePool).
 func (p *Password) composePassword(runePool []rune) ([]rune, error) {
 	var password []rune
-	for i := int64(0); i < int64(p.passwordLength.value); i++ {
-		runeAtIndex, err := p.randomIndexFromRunePool(runePool)
-		if err != nil {
-			return nil, ErrPassword
-		}
-		password = append(password, runePool[runeAtIndex])
+	runeAtIndex, err := p.randomIndexFromRunePool(runePool)
+	if err != nil {
+		return nil, ErrPassword
 	}
+	password = append(password, runePool[runeAtIndex])
 	return password, nil
 }
 

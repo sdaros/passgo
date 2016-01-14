@@ -35,5 +35,4 @@ func main() {
 		panic(err)
 	}
 	env.Infof("UnsealedSecret: %v", unsealedSecret)
-
 }

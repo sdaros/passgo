@@ -24,8 +24,11 @@ func Environment(logger Logger, entropy ent.Entropy, registrar *Registrar) *Env 
 	if entropy == nil {
 		entropy = ent.CryptoRand
 	}
-	// initialize values map in registrar
-	registrar.values = make(map[string]interface{})
+	// initialize values map in registrar when not nil
+	if registrar != nil {
+		registrar.values = make(map[string]interface{})
+
+	}
 	return &Env{Logger: logger, Entropy: entropy, Registrar: registrar}
 }
 
