@@ -17,7 +17,14 @@ func RegisterOptions(env *environment.Env) {
 	var registeredOptions Options
 	registeredOptions = []interface{}{
 		&passwordLength{
-			"password-length", "Length of password to be generated.", 15,
+			name:        "password-length",
+			description: "Length of password to be generated.",
+			value:       15,
+		},
+		&noSymbols{
+			name:        "no-symbols",
+			description: "Use only alphabetic characters.",
+			value:       false,
 		},
 	}
 	env.Register("options", registeredOptions)
@@ -37,23 +44,34 @@ func (pl *passwordLength) String() string {
 
 // Set sets the value for the passwordLength option and validates the range.
 func (pl *passwordLength) Set(value string) (err error) {
-	const passwordLengthMin = 1
-	const passwordLengthMax = 256
 	length, err := strconv.Atoi(value)
 	if err != nil {
 		return err
 	}
-	if length < passwordLengthMin || length > passwordLengthMax {
-		err = fmt.Errorf("Password length must be between %v and %v characters",
-			passwordLengthMin, passwordLengthMax)
+	if err := validate(length); err != nil {
 		return err
 	}
 	pl.value = length
 	return nil
 }
 
+func validate(length int) (err error) {
+	const passwordLengthMin = 1
+	const passwordLengthMax = 256
+	if length < passwordLengthMin || length > passwordLengthMax {
+		err = fmt.Errorf("Password length must be between %v and %v characters",
+			passwordLengthMin, passwordLengthMax)
+		return err
+	}
+	return nil
+}
+
 // noSymbols option.
-type noSymbols bool
+type noSymbols struct {
+	name        string
+	description string
+	value       bool
+}
 
 func (ns *noSymbols) String() string {
 	return fmt.Sprint(*ns)
@@ -64,6 +82,6 @@ func (ns *noSymbols) Set(value string) (err error) {
 	if err != nil {
 		return err
 	}
-	*ns = noSymbols(noSymb)
+	ns.value = noSymb
 	return nil
 }

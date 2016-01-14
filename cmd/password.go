@@ -34,7 +34,7 @@ var (
 type Password struct {
 	name           string
 	description    string
-	noSymbols      noSymbols
+	noSymbols      *noSymbols
 	passwordLength *passwordLength
 	*environment.Env
 }
@@ -51,7 +51,7 @@ func (p *Password) Execute(options ...interface{}) (password []rune, err error) 
 // Password returns a password by selecting random
 // elements from an ASCII subset (runePool).
 func (p *Password) Password() (password []rune, err error) {
-	if p.noSymbols {
+	if p.noSymbols.value {
 		return p.composePassword(runesNoSymbols)
 	}
 	return p.composePassword(runesWithSymbols)

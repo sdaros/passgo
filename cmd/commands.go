@@ -14,7 +14,7 @@ func RegisterCommands(env *environment.Env) {
 		&Password{
 			name:           "password",
 			description:    "Length of password to be generated.",
-			noSymbols:      false,
+			noSymbols:      new(noSymbols),
 			passwordLength: new(passwordLength),
 			Env:            env,
 		},
