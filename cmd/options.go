@@ -9,11 +9,12 @@ import (
 	"strconv"
 )
 
-// options available for all commands
-type options []interface{}
+type Options []interface {
+	// options available for all commands
+}
 
-func registerOptions(env *environment.Env) {
-	var registeredOptions options
+func RegisterOptions(env *environment.Env) {
+	var registeredOptions Options
 	registeredOptions = []interface{}{
 		&passwordLength{
 			"password-length", "Length of password to be generated.", 15,

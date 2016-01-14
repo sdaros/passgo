@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/sdaros/passgo/cmd"
+	"github.com/sdaros/passgo/cli"
 	"github.com/sdaros/passgo/entropy"
 	"github.com/sdaros/passgo/environment"
 	"github.com/sdaros/passgo/sealer"
@@ -14,7 +14,7 @@ func main() {
 		entropy.CryptoRand,
 		new(environment.Registrar),
 	)
-	if err := cmd.ParseArgs(env); err != nil {
+	if err := cli.ParseArgs(env); err != nil {
 		env.Error(err)
 	}
 	lbl := &Label{"https://lbl.com"}

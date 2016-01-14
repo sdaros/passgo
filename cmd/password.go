@@ -32,8 +32,10 @@ var (
 // Password returns a password to the caller
 // based on the parameters provided to it.
 type Password struct {
-	NoSymbols      bool
-	PasswordLength int64
+	name           string
+	description    string
+	noSymbols      noSymbols
+	passwordLength *passwordLength
 	*environment.Env
 }
 
@@ -49,7 +51,7 @@ func (p *Password) Execute(options ...interface{}) (password []rune, err error) 
 // Password returns a password by selecting random
 // elements from an ASCII subset (runePool).
 func (p *Password) Password() (password []rune, err error) {
-	if p.NoSymbols {
+	if p.noSymbols {
 		return p.composePassword(runesNoSymbols)
 	}
 	return p.composePassword(runesWithSymbols)
@@ -59,7 +61,7 @@ func (p *Password) Password() (password []rune, err error) {
 // random elements from an ASCII subset (runePool).
 func (p *Password) composePassword(runePool []rune) ([]rune, error) {
 	var password []rune
-	for i := int64(0); i < int64(p.PasswordLength); i++ {
+	for i := int64(0); i < int64(p.passwordLength.value); i++ {
 		runeAtIndex, err := p.randomIndexFromRunePool(runePool)
 		if err != nil {
 			return nil, ErrPassword
