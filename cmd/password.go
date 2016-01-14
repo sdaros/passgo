@@ -23,7 +23,7 @@ var (
 		'^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
 		'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
 		'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~'}
-	ErrPassword = errors.New("cryptoRand: Error while trying" +
+	ErrPassword = errors.New("cmd: Error while trying" +
 		" to generate password")
 )
 
@@ -33,7 +33,7 @@ type Password struct {
 	name           string
 	description    string
 	noSymbols      *noSymbols
-	passwordLength *passwordLength
+	PasswordLength *passwordLength
 	*environment.Env
 }
 
@@ -43,7 +43,7 @@ func NewPassword(env *environment.Env) *Password {
 		name:           "password",
 		description:    "Length of password to be generated.",
 		noSymbols:      NewNoSymbols(),
-		passwordLength: NewPasswordLength(),
+		PasswordLength: NewPasswordLength(),
 		Env:            env,
 	}
 	return password
@@ -52,7 +52,9 @@ func NewPassword(env *environment.Env) *Password {
 // Execute validates command options then returns a password
 // composed of random elements chosen from a rune pool
 func (p *Password) Execute() (password []rune, err error) {
-	p.validate()
+	if err := p.validate(); err != nil {
+		return nil, err
+	}
 	if p.noSymbols.value {
 		return p.composePassword(runesNoSymbols)
 	}
@@ -60,8 +62,8 @@ func (p *Password) Execute() (password []rune, err error) {
 }
 
 func (p *Password) validate() (err error) {
-	length := p.passwordLength.value
-	if err := p.passwordLength.Validate(length); err != nil {
+	length := p.PasswordLength.value
+	if err := p.PasswordLength.Validate(length); err != nil {
 		return err
 	}
 	return nil
@@ -71,11 +73,13 @@ func (p *Password) validate() (err error) {
 // random elements from an ASCII subset (runePool).
 func (p *Password) composePassword(runePool []rune) ([]rune, error) {
 	var password []rune
-	runeAtIndex, err := p.randomIndexFromRunePool(runePool)
-	if err != nil {
-		return nil, ErrPassword
+	for i := 0; i < p.PasswordLength.value; i++ {
+		runeAtIndex, err := p.randomIndexFromRunePool(runePool)
+		if err != nil {
+			return nil, ErrPassword
+		}
+		password = append(password, runePool[runeAtIndex])
 	}
-	password = append(password, runePool[runeAtIndex])
 	return password, nil
 }
 

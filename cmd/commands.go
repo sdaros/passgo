@@ -11,13 +11,7 @@ type Commands []interface {
 func RegisterCommands(env *environment.Env) {
 	var registeredCommands Commands
 	registeredCommands = []interface{}{
-		&Password{
-			name:           "password",
-			description:    "Length of password to be generated.",
-			noSymbols:      new(noSymbols),
-			passwordLength: new(passwordLength),
-			Env:            env,
-		},
+		NewPassword(env),
 	}
 	env.Register("commands", registeredCommands)
 }

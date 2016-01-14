@@ -51,11 +51,18 @@ func executeCommands(env *environment.Env) (err error) {
 	for _, command := range commandsToParse {
 		commandName := reflect.ValueOf(command).Elem().FieldByName("name").String()
 		if flag.Args()[0] == commandName {
+			command := reflect.ValueOf(command).Interface().(*cmd.Password)
+			//executeMethodValue := reflect.ValueOf(command).MethodByName("Execute")
+			//executeMethod := executeMethodValue.Interface().(func() ([]rune, error))
 			// - use docker cli/cli.go for inspiration
 			// probably something like this:
 			// - method := reflect.ValueOf(command).MethodByName(execute)
 			// - return method.Interface().(func(...string) error), nil
-			fmt.Println(commandName)
+			val, err := command.Execute()
+			if err != nil {
+				return err
+			}
+			fmt.Printf("env: %#v, val: %#v, type: %v\n", env.Lookup("options").(cmd.Options)[0], val, reflect.TypeOf(command))
 			return nil
 
 		}
