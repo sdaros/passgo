@@ -7,8 +7,7 @@ import (
 )
 
 var (
-	// Define a range of characters that the Password() implementation
-	// can choose from when generating random passwords.
+	// Define a range of characters that can be used when generating random passwords.
 	runesNoSymbols = []rune{
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
 		'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -39,18 +38,9 @@ type Password struct {
 	*environment.Env
 }
 
-// Execute validates parameters of Password and runs the Password Command.
-func (p *Password) Execute(options ...interface{}) (password []rune, err error) {
-	password, err = p.Password()
-	if err != nil {
-		return nil, err
-	}
-	return password, nil
-}
-
-// Password returns a password by selecting random
-// elements from an ASCII subset (runePool).
-func (p *Password) Password() (password []rune, err error) {
+// Execute returns a password composed of random elements
+// chosen from a rune pool
+func (p *Password) Execute() (password []rune, err error) {
 	if p.noSymbols.value {
 		return p.composePassword(runesNoSymbols)
 	}
@@ -72,7 +62,7 @@ func (p *Password) composePassword(runePool []rune) ([]rune, error) {
 }
 
 // randomIndexFromRunePool returns index from Rune Pool using the
-// Entropy implementation defined in the environment
+// Int() method from the Entropy implementation defined in the environment
 func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 	return p.Int(len(runePool) - 1)
 }
