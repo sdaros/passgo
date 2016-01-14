@@ -34,6 +34,9 @@ func parseOptions(env *environment.Env) (err error) {
 
 func parseCommands(env *environment.Env) (err error) {
 	cmd.RegisterCommands(env)
+	if err := executeCommands(env); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -46,7 +49,16 @@ func executeCommands(env *environment.Env) (err error) {
 	registeredCommands := env.Lookup("commands")
 	commandsToParse := registeredCommands.(cmd.Commands)
 	for _, command := range commandsToParse {
-		fmt.Println(reflect.TypeOf(command))
+		commandName := reflect.ValueOf(command).Elem().FieldByName("name").String()
+		if flag.Args()[0] == commandName {
+			// - use docker cli/cli.go for inspiration
+			// probably something like this:
+			// - method := reflect.ValueOf(command).MethodByName(execute)
+			// - return method.Interface().(func(...string) error), nil
+			fmt.Println(commandName)
+			return nil
+
+		}
 	}
 	return nil
 }
