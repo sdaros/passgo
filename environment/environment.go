@@ -28,3 +28,7 @@ func Environment(logger Logger, entropy ent.Entropy, registrar *Registrar) *Env 
 	registrar.values = make(map[string]interface{})
 	return &Env{Logger: logger, Entropy: entropy, Registrar: registrar}
 }
+
+func Null() *Env {
+	return Environment(nil, nil, nil)
+}
