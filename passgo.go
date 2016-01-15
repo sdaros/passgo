@@ -14,9 +14,11 @@ func main() {
 		entropy.CryptoRand,
 		new(environment.Registrar),
 	)
-	if err := cli.ParseArgs(env); err != nil {
+	result, err := cli.ParseArgs(env)
+	if err != nil {
 		env.Error(err)
 	}
+	env.Infof("result: %q", result)
 	lbl := &Label{"https://lbl.com"}
 	content, err := stamper.ScryptStamper.Stamp(lbl)
 	if err != nil {

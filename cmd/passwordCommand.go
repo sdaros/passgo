@@ -30,28 +30,30 @@ var (
 // Password returns a password to the caller
 // based on the parameters provided to it.
 type Password struct {
-	name           string
-	description    string
+	name           string `schema.org: "/name"`
+	description    string `schema.org: "/description"`
 	noSymbols      *noSymbols
 	PasswordLength *passwordLength
 	*environment.Env
 }
 
 // NewPassword returns a password command with default values
-func NewPassword(env *environment.Env) *Password {
+func NewPassword() *Password {
 	password := &Password{
 		name:           "password",
 		description:    "Length of password to be generated.",
 		noSymbols:      NewNoSymbols(),
 		PasswordLength: NewPasswordLength(),
-		Env:            env,
+		Env:            environment.Null(),
 	}
 	return password
 }
 
 // Execute validates command options then returns a password
 // composed of random elements chosen from a rune pool
-func (p *Password) Execute() (password []rune, err error) {
+func (p *Password) Execute(env *environment.Env) (CommandResult, error) {
+	p.Env = env
+	p.applyCommandOptions(env)
 	if err := p.validate(); err != nil {
 		return nil, err
 	}
@@ -61,17 +63,9 @@ func (p *Password) Execute() (password []rune, err error) {
 	return p.composePassword(runesWithSymbols)
 }
 
-func (p *Password) validate() (err error) {
-	length := p.PasswordLength.value
-	if err := p.PasswordLength.Validate(length); err != nil {
-		return err
-	}
-	return nil
-}
-
-// composePassword of passwordLength by selecting
-// random elements from an ASCII subset (runePool).
-func (p *Password) composePassword(runePool []rune) ([]rune, error) {
+// composePassword of passwordLength by selecting random elements
+// from an ASCII subset (runePool).
+func (p *Password) composePassword(runePool []rune) (CommandResult, error) {
 	var password []rune
 	for i := 0; i < p.PasswordLength.value; i++ {
 		runeAtIndex, err := p.randomIndexFromRunePool(runePool)
@@ -87,4 +81,18 @@ func (p *Password) composePassword(runePool []rune) ([]rune, error) {
 // Int() method from the Entropy implementation defined in the environment
 func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 	return p.Int(len(runePool) - 1)
+}
+
+func (p *Password) applyCommandOptions(env *environment.Env) {
+	// load CommandOptions from cli flags
+	p.PasswordLength = env.Lookup("password-length").(*passwordLength)
+	// TODO: load noSymbols
+}
+
+func (p *Password) validate() (err error) {
+	length := p.PasswordLength.value
+	if err := p.PasswordLength.Validate(length); err != nil {
+		return err
+	}
+	return nil
 }

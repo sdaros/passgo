@@ -9,65 +9,45 @@ import (
 	"reflect"
 )
 
-func ParseArgs(env *environment.Env) (err error) {
+func ParseArgs(env *environment.Env) (cmd.CommandResult, error) {
 	if err := parseOptions(env); err != nil {
-		return err
+		return nil, err
 	}
-	if err := parseCommands(env); err != nil {
-		return err
+	result, err := parseCommands(env)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	return result, nil
 }
 
 func parseOptions(env *environment.Env) (err error) {
-	cmd.RegisterOptions(env)
-	registeredOptions := env.Lookup("options")
-	optionsToParse := registeredOptions.(cmd.Options)
-	for _, option := range optionsToParse {
+	env.Register("commandOptions", cmd.PassgoCommandOptions)
+	optionsToParse := env.Lookup("commandOptions")
+	for _, option := range optionsToParse.([]cmd.CommandOption) {
 		name := reflect.ValueOf(option).Elem().FieldByName("name").String()
 		description := reflect.ValueOf(option).Elem().FieldByName("description").String()
-		flag.Var(option.(flag.Value), name, description)
+		flag.Var(option, name, description)
+		env.Register(name, option)
 	}
 	flag.Parse()
 	return nil
 }
 
-func parseCommands(env *environment.Env) (err error) {
-	cmd.RegisterCommands(env)
-	if err := executeCommands(env); err != nil {
-		return err
-	}
-	return nil
-}
-
-func executeCommands(env *environment.Env) (err error) {
+func parseCommands(env *environment.Env) (cmd.CommandResult, error) {
 	if len(flag.Args()) == 0 {
 		Usage()
-		return nil
+		return nil, nil
 	}
 	// - flag.Args()[0] in env.Lookup("commands")
-	registeredCommands := env.Lookup("commands")
-	commandsToParse := registeredCommands.(cmd.Commands)
-	for _, command := range commandsToParse {
-		commandName := reflect.ValueOf(command).Elem().FieldByName("name").String()
-		if flag.Args()[0] == commandName {
-			command := reflect.ValueOf(command).Interface().(*cmd.Password)
-			//executeMethodValue := reflect.ValueOf(command).MethodByName("Execute")
-			//executeMethod := executeMethodValue.Interface().(func() ([]rune, error))
-			// - use docker cli/cli.go for inspiration
-			// probably something like this:
-			// - method := reflect.ValueOf(command).MethodByName(execute)
-			// - return method.Interface().(func(...string) error), nil
-			val, err := command.Execute()
-			if err != nil {
-				return err
-			}
-			fmt.Printf("env: %#v, val: %#v, type: %v\n", env.Lookup("options").(cmd.Options)[0], val, reflect.TypeOf(command))
-			return nil
-
+	if command, ok := cmd.PassgoCommands[flag.Args()[0]]; ok {
+		result, err := command.Execute(env)
+		if err != nil {
+			return nil, err
 		}
+		return result, nil
 	}
-	return nil
+	Usage()
+	return nil, nil
 }
 
 func Usage() {
