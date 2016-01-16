@@ -3,13 +3,24 @@
 package courier
 
 import (
-	_ "github.com/sdaros/passgo/cmd"
-	_ "github.com/sdaros/passgo/sealer"
-	_ "github.com/sdaros/passgo/stamper"
+	"github.com/sdaros/passgo/cmd"
+	"github.com/sdaros/passgo/environment"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
 )
 
+// Courier acts as a CommandHandler and oversees program flow
+// throughout the application.
+type Courier struct {
+	execute ExecuteFn
+}
+
+// ExecuteFn holds the Execute() method from an Executable Command.
+type ExecuteFn func(*environment.Env) (cmd.CommandResult, error)
+
+func (c *Courier) ProcessUserInput() {
+
+}
 func readFromStdIn() ([]byte, error) {
 	fd := int(os.Stdin.Fd())
 	pass, err := terminal.ReadPassword(fd)

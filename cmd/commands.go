@@ -5,8 +5,8 @@ import (
 	"reflect"
 )
 
-// Command supported by passgo.
-type Command interface {
+// Executable is implemented by all commands in passgo.
+type Executable interface {
 	Execute(*environment.Env) (CommandResult, error)
 }
 
@@ -14,10 +14,10 @@ type CommandResult interface {
 	// CommandResult returned by a command.
 }
 
-var passgoCommands = []Command{
+var passgoCommands = []Executable{
 	NewPassword(),
 }
-var PassgoCommands = make(map[string]Command)
+var PassgoCommands = make(map[string]Executable)
 
 func init() {
 	for _, cmd := range passgoCommands {
