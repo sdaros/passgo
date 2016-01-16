@@ -4,15 +4,15 @@ import (
 	ent "github.com/sdaros/passgo/entropy"
 )
 
-// Env is provided as an environment by courier that is accessible
-// to all clients that require its functionality
+// Env is provided as an environment by that is accessible
+// to all clients that require its functionality.
 type Env struct {
 	Logger
 	ent.Entropy
 	*Registrar
 }
 
-// Initialise the environment
+// Initialise the environment.
 func Environment(logger Logger, entropy ent.Entropy, registrar *Registrar) *Env {
 	// TODO: Read from config file
 
@@ -24,11 +24,13 @@ func Environment(logger Logger, entropy ent.Entropy, registrar *Registrar) *Env 
 	if entropy == nil {
 		entropy = ent.CryptoRand
 	}
-	// initialize values map in registrar when not nil
-	if registrar != nil {
+	// nil registrar creates and initializes the registrar's values
+	if registrar == nil {
+		registrar = new(Registrar)
 		registrar.values = make(map[string]interface{})
 
 	}
+
 	return &Env{Logger: logger, Entropy: entropy, Registrar: registrar}
 }
 

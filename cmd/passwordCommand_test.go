@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	_ "github.com/sdaros/passgo/entropy"
 	"github.com/sdaros/passgo/environment"
 	"testing"
 )
@@ -16,23 +17,21 @@ func (tv testVector) String() string {
 // Password() should failed
 func Test_password_against_invalid_password_length(t *testing.T) {
 	env := environment.Null()
-	command := NewPassword(env)
+	command := NewPassword()
 	passwordLength := NewPasswordLength()
 
 	// passwordLength too short
 	passwordLength.value = 0
-	command.passwordLength = passwordLength
-	pass, err := command.Execute()
-	fmt.Printf("command: %#v", command.passwordLength)
-	fmt.Printf("pass: %v", pass)
+	env.Register("password-length", passwordLength)
+	_, err := command.Execute(env)
 	if err == nil {
 		t.Error("Should have received an error")
 	}
 	// passwordLength too long
 	passwordLength.value = 257
-	command.passwordLength = passwordLength
-	_, err = command.Execute()
+	env.Register("password-length", passwordLength)
+	_, err = command.Execute(env)
 	if err == nil {
-		t.Error("Should have received an error.")
+		t.Error("Should have received an error")
 	}
 }

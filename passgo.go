@@ -2,18 +2,13 @@ package main
 
 import (
 	"github.com/sdaros/passgo/cli"
-	"github.com/sdaros/passgo/entropy"
 	"github.com/sdaros/passgo/environment"
 	"github.com/sdaros/passgo/sealer"
 	"github.com/sdaros/passgo/stamper"
 )
 
 func main() {
-	env := environment.Environment(
-		new(environment.StandardLogger),
-		entropy.CryptoRand,
-		new(environment.Registrar),
-	)
+	env := environment.Environment(new(environment.StandardLogger), nil, nil)
 	result, err := cli.ParseArgs(env)
 	if err != nil {
 		env.Error(err)
