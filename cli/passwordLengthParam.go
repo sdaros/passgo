@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 import (
 	"fmt"
@@ -7,9 +7,10 @@ import (
 
 // passwordLength option.
 type passwordLength struct {
-	name        string
-	description string
-	value       int
+	name        string `schema.org: "/name"`
+	description string `schema.org: "/description"`
+	value       int    `schema.org: "/value"`
+	isCommand   bool
 }
 
 // NewPasswordLength returns a passwordLength option with default values.
@@ -18,6 +19,7 @@ func NewPasswordLength() *passwordLength {
 		name:        "password-length",
 		description: "Length of password to be generated.",
 		value:       15,
+		isCommand:   false,
 	}
 	return pl
 }

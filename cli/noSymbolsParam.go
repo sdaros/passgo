@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 import (
 	"fmt"
@@ -7,9 +7,10 @@ import (
 
 // noSymbols option.
 type noSymbols struct {
-	name        string
-	description string
-	value       bool
+	name        string `schema.org: "/name"`
+	description string `schema.org: "/description"`
+	value       bool   `schema.org: "/value"`
+	isCommand   bool
 }
 
 // NewPasswordLength returns a passwordLength option with default values.
@@ -18,6 +19,7 @@ func NewNoSymbols() *noSymbols {
 		name:        "no-symbols",
 		description: "Use only alphabetic characters",
 		value:       false,
+		isCommand:   false,
 	}
 	return ns
 }

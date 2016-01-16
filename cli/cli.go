@@ -9,15 +9,8 @@ import (
 	"reflect"
 )
 
-func ParseArgs(env *environment.Env) (cmd.CommandResult, error) {
-	if err := parseOptions(env); err != nil {
-		return nil, err
-	}
-	result, err := parseCommands(env)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+func Parse(env *environment.Env) (cmd.ExecuteFn, error) {
+
 }
 
 func parseOptions(env *environment.Env) (err error) {
