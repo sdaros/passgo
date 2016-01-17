@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"github.com/sdaros/passgo/environment"
-	"reflect"
 )
 
 type (
 	// Executable is implemented by all commands in passgo.
 	Executable interface {
 		Execute(*environment.Env) (CommandResult, error)
+		Name() string
 	}
 	// ExecuteFn holds the Execute() method from an Executable Command.
 	ExecuteFn func(*environment.Env) (CommandResult, error)
@@ -25,7 +25,7 @@ var (
 
 func init() {
 	for _, cmd := range passgoCommands {
-		cmdName := reflect.ValueOf(cmd).Elem().FieldByName("name").String()
+		cmdName := cmd.Name()
 		PassgoCommands[cmdName] = cmd
 	}
 }

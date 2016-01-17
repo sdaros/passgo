@@ -31,9 +31,8 @@ var (
 // based on the parameters provided to it.
 type Password struct {
 	name           string `schema.org: "/name"`
-	description    string `schema.org: "/description"`
-	noSymbols      *noSymbols
-	PasswordLength *passwordLength
+	noSymbols      *noSymbolsParam
+	passwordLength *passwordLengthParam
 	*environment.Env
 }
 
@@ -41,9 +40,8 @@ type Password struct {
 func NewPassword() *Password {
 	password := &Password{
 		name:           "password",
-		description:    "Length of password to be generated.",
-		noSymbols:      NewNoSymbols(),
-		PasswordLength: NewPasswordLength(),
+		noSymbols:      NewNoSymbolsParam(),
+		passwordLength: NewPasswordLengthParam(),
 		Env:            environment.Null(),
 	}
 	return password
@@ -67,7 +65,7 @@ func (p *Password) Execute(env *environment.Env) (CommandResult, error) {
 // from an ASCII subset (runePool).
 func (p *Password) composePassword(runePool []rune) (CommandResult, error) {
 	var password []rune
-	for i := 0; i < p.PasswordLength.value; i++ {
+	for i := 0; i < p.passwordLength.value; i++ {
 		runeAtIndex, err := p.randomIndexFromRunePool(runePool)
 		if err != nil {
 			return nil, ErrPassword
@@ -85,14 +83,18 @@ func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 
 func (p *Password) applyCommandOptions(env *environment.Env) {
 	// load CommandOptions from cli flags
-	p.PasswordLength = env.Lookup("password-length").(*passwordLength)
+	p.passwordLength = env.Lookup("password-length").(*passwordLengthParam)
 	// TODO: load noSymbols
 }
 
 func (p *Password) validate() (err error) {
-	length := p.PasswordLength.value
-	if err := p.PasswordLength.Validate(length); err != nil {
+	length := p.passwordLength.value
+	if err := p.passwordLength.Validate(length); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (p *Password) Name() string {
+	return p.name
 }

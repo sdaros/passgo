@@ -5,16 +5,22 @@ package cli
 
 import (
 	"flag"
+	"github.com/sdaros/passgo/cmd"
 )
 
 // Param that is given on the command line.
 type Param interface {
 	flag.Value
+	Name() string
+	Description() string
+	IsCommand() bool
 }
 
+var PassgoFlags = flag.NewFlagSet("passgoFlags", flag.ExitOnError)
+
 var PassgoParams = []Param{
-	NewPasswordLength(),
-	NewNoSymbols(),
-	NewPasswordParam(),
-	NewGenerateParam(),
+	cmd.NewPasswordLengthParam(),
+	cmd.NewNoSymbolsParam(),
+	cmd.NewPasswordParam(),
+	cmd.NewGenerateParam(),
 }

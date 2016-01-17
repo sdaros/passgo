@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/sdaros/passgo/cli"
+	"github.com/sdaros/passgo/courier"
 	"github.com/sdaros/passgo/environment"
 	"github.com/sdaros/passgo/sealer"
 	"github.com/sdaros/passgo/stamper"
@@ -9,11 +9,16 @@ import (
 
 func main() {
 	env := environment.Environment(new(environment.StandardLogger), nil, nil)
-	result, err := cli.ParseArgs(env)
+	cr := new(courier.Courier)
+	if err := cr.ProcessUserInput(env); err != nil {
+		env.Error(err)
+	}
+	env.Infof("courier: %v", cr)
+	result, err := cr.Execute(env)
 	if err != nil {
 		env.Error(err)
 	}
-	env.Infof("result: %q", result)
+	env.Infof("result: %v", result)
 	lbl := &Label{"https://lbl.com"}
 	content, err := stamper.ScryptStamper.Stamp(lbl)
 	if err != nil {

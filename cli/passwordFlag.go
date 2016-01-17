@@ -14,10 +14,22 @@ type passwordParam struct {
 func NewPasswordParam() *passwordParam {
 	p := &passwordParam{
 		name:        "password",
-		description: "generate a random password.",
+		description: "Generate a random password.``",
 		isCommand:   true,
 	}
 	return p
+}
+
+func (p *passwordParam) Name() string {
+	return p.name
+}
+
+func (p *passwordParam) Description() string {
+	return p.description
+}
+
+func (p *passwordParam) IsCommand() bool {
+	return p.isCommand
 }
 
 func (p *passwordParam) String() string {
@@ -27,3 +39,5 @@ func (p *passwordParam) String() string {
 func (p *passwordParam) Set(value string) (err error) {
 	return nil
 }
+
+func (p *passwordParam) IsBoolFlag() bool { return true }

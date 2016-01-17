@@ -13,15 +13,16 @@ import (
 // Courier acts as a CommandHandler and oversees program flow
 // throughout the application.
 type Courier struct {
-	execute cmd.ExecuteFn
+	Execute cmd.ExecuteFn
 }
 
-func (c *Courier) ProcessUserInput(env *environment.Env) (cmd.CommandResult, error) {
+func (c *Courier) ProcessUserInput(env *environment.Env) error {
 	commandToExecute, err := cli.Parse(env)
 	if err != nil {
 		return err
 	}
-
+	c.Execute = commandToExecute
+	return nil
 }
 func readFromStdIn() ([]byte, error) {
 	fd := int(os.Stdin.Fd())

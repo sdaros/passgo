@@ -6,41 +6,22 @@ import (
 	"github.com/sdaros/passgo/cmd"
 	"github.com/sdaros/passgo/environment"
 	"os"
-	"reflect"
 )
 
 func Parse(env *environment.Env) (cmd.ExecuteFn, error) {
-
-}
-
-func parseOptions(env *environment.Env) (err error) {
-	env.Register("commandOptions", cmd.PassgoCommandOptions)
-	optionsToParse := env.Lookup("commandOptions")
-	for _, option := range optionsToParse.([]cmd.CommandOption) {
-		name := reflect.ValueOf(option).Elem().FieldByName("name").String()
-		description := reflect.ValueOf(option).Elem().FieldByName("description").String()
-		flag.Var(option, name, description)
-		env.Register(name, option)
+	var commandsToExecute []Param
+	env.Register("params", PassgoParams)
+	paramsToParse := env.Lookup("params")
+	for _, param := range paramsToParse.([]Param) {
+		if param.IsCommand() {
+			commandsToExecute = append(commandsToExecute, param)
+		}
+		flag.Var(param, param.Name(), param.Description())
 	}
 	flag.Parse()
-	return nil
-}
 
-func parseCommands(env *environment.Env) (cmd.CommandResult, error) {
-	if len(flag.Args()) == 0 {
-		Usage()
-		return nil, nil
-	}
-	// - flag.Args()[0] in env.Lookup("commands")
-	if command, ok := cmd.PassgoCommands[flag.Args()[0]]; ok {
-		result, err := command.Execute(env)
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
-	}
-	Usage()
-	return nil, nil
+	command := cmd.PassgoCommands[commandsToExecute[0].Name()]
+	return command.Execute, nil
 }
 
 func Usage() {

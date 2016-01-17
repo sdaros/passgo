@@ -1,4 +1,4 @@
-package cli
+package cmd
 
 import (
 	"fmt"
@@ -13,11 +13,23 @@ type generateParam struct {
 // NewGenerateParam returns a generateParam with default values.
 func NewGenerateParam() *generateParam {
 	g := &generateParam{
-		name:        "password",
-		description: "generate a random password.",
+		name:        "generate",
+		description: "Generate a new sealed secret.",
 		isCommand:   true,
 	}
 	return g
+}
+
+func (g *generateParam) Name() string {
+	return g.name
+}
+
+func (g *generateParam) Description() string {
+	return g.description
+}
+
+func (g *generateParam) IsCommand() bool {
+	return g.isCommand
 }
 
 func (g *generateParam) String() string {
