@@ -18,7 +18,7 @@ func (tv testVector) String() string {
 func Test_password_against_invalid_password_length(t *testing.T) {
 	env := environment.Null()
 	command := NewPassword()
-	passwordLength := NewPasswordLength()
+	passwordLength := NewPasswordLengthFlag()
 
 	// passwordLength too short
 	passwordLength.value = 0

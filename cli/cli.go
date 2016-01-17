@@ -8,23 +8,36 @@ import (
 	"os"
 )
 
-func Parse(env *environment.Env) (cmd.ExecuteFn, error) {
-	var commandsToExecute []Param
-	env.Register("params", PassgoParams)
-	paramsToParse := env.Lookup("params")
-	for _, param := range paramsToParse.([]Param) {
-		if param.IsCommand() {
-			commandsToExecute = append(commandsToExecute, param)
-		}
-		flag.Var(param, param.Name(), param.Description())
+func Parse(env *environment.Env) {
+	flagSet := flag.NewFlagSet("passgoFlags", flag.ExitOnError)
+	setUsage(flagSet)
+	env.Register("passgoFlags", passgoFlags)
+	flagsToParse := env.Lookup("passgoFlags").([]PassgoFlag)
+	for _, flag := range flagsToParse {
+		flagSet.Var(flag, flag.Name(), flag.Usage())
+		env.Register(flag.Name(), flag)
 	}
-	flag.Parse()
-
-	command := cmd.PassgoCommands[commandsToExecute[0].Name()]
-	return command.Execute, nil
+	flagSet.Parse(os.Args[1:])
+	flagSet.Visit(toRegisterCommandInEnv(env))
+	if env.Lookup("commandToExecute") == nil {
+		flagSet.Usage()
+	}
 }
 
-func Usage() {
-	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-	flag.PrintDefaults()
+func toRegisterCommandInEnv(env *environment.Env) func(*flag.Flag) {
+	fn := func(f *flag.Flag) {
+		if f.Value.(PassgoFlag).IsCommand() {
+			commandToExecute := cmd.PassgoCommands[f.Value.(PassgoFlag).Name()]
+			env.Register("commandToExecute", commandToExecute)
+		}
+	}
+	return fn
+}
+
+func setUsage(fs *flag.FlagSet) {
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fs.PrintDefaults()
+		os.Exit(2)
+	}
 }

@@ -9,18 +9,16 @@ import (
 )
 
 // Param that is given on the command line.
-type Param interface {
+type PassgoFlag interface {
 	flag.Value
 	Name() string
-	Description() string
+	Usage() string
 	IsCommand() bool
 }
 
-var PassgoFlags = flag.NewFlagSet("passgoFlags", flag.ExitOnError)
-
-var PassgoParams = []Param{
-	cmd.NewPasswordLengthParam(),
-	cmd.NewNoSymbolsParam(),
-	cmd.NewPasswordParam(),
-	cmd.NewGenerateParam(),
+var passgoFlags = []PassgoFlag{
+	cmd.NewPasswordCommandFlag(),
+	cmd.NewNoSymbolsFlag(),
+	cmd.NewPasswordLengthFlag(),
+	cmd.NewGenerateCommandFlag(),
 }

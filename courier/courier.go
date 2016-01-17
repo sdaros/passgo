@@ -17,13 +17,11 @@ type Courier struct {
 }
 
 func (c *Courier) ProcessUserInput(env *environment.Env) error {
-	commandToExecute, err := cli.Parse(env)
-	if err != nil {
-		return err
-	}
-	c.Execute = commandToExecute
+	cli.Parse(env)
+	c.Execute = env.Lookup("commandToExecute").(cmd.Executable).Execute
 	return nil
 }
+
 func readFromStdIn() ([]byte, error) {
 	fd := int(os.Stdin.Fd())
 	pass, err := terminal.ReadPassword(fd)
