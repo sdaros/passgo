@@ -12,12 +12,11 @@ type passwordCommandFlag struct {
 
 // NewPasswordCommandFlag returns a passwordCommandFlag with default values.
 func NewPasswordCommandFlag() *passwordCommandFlag {
-	p := &passwordCommandFlag{
+	return &passwordCommandFlag{
 		name:      "password",
 		usage:     "Generate a random password.``",
 		isCommand: true,
 	}
-	return p
 }
 
 func (p *passwordCommandFlag) Name() string {

@@ -11,8 +11,8 @@ type (
 		Execute(*environment.Env) (*CommandResult, error)
 		Name() string
 	}
-	// ExecuteFn holds the Execute() method from an Executable Command.
-	ExecuteFn func(*environment.Env) (*CommandResult, error)
+	// ExecuteFunc holds the Execute() method from an Executable Command.
+	ExecuteFunc func(*environment.Env) (*CommandResult, error)
 	// CommandResult returned by a command.
 	CommandResult struct {
 		Value interface{} `json:"value"`

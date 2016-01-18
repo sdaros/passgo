@@ -38,13 +38,12 @@ type Password struct {
 
 // NewPassword returns a password command with default values
 func NewPassword() *Password {
-	password := &Password{
+	return &Password{
 		name:           "password",
 		noSymbols:      NewNoSymbolsFlag(),
 		passwordLength: NewPasswordLengthFlag(),
 		Env:            environment.Null(),
 	}
-	return password
 }
 
 // Execute validates command options then returns a password

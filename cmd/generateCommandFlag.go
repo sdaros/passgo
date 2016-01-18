@@ -12,12 +12,11 @@ type generateCommandFlag struct {
 
 // NewGenerateCommandFlag returns a generateCommandFlag with default values.
 func NewGenerateCommandFlag() *generateCommandFlag {
-	g := &generateCommandFlag{
+	return &generateCommandFlag{
 		name:      "generate",
 		usage:     "Generate a new sealed secret.",
 		isCommand: true,
 	}
-	return g
 }
 
 func (g *generateCommandFlag) Name() string {

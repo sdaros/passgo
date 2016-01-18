@@ -14,13 +14,12 @@ type noSymbolsFlag struct {
 
 // NewNoSymbolsFlag returns a noSymbols parameter with default values.
 func NewNoSymbolsFlag() *noSymbolsFlag {
-	ns := &noSymbolsFlag{
+	return &noSymbolsFlag{
 		name:      "no-symbols",
 		usage:     "Use only alphabetic characters",
 		value:     false,
 		isCommand: false,
 	}
-	return ns
 }
 
 func (ns *noSymbolsFlag) Name() string {

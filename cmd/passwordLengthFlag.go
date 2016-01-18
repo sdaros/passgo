@@ -14,13 +14,12 @@ type passwordLengthFlag struct {
 
 // NewPasswordLengthFlag returns a passwordLength parameter with default values.
 func NewPasswordLengthFlag() *passwordLengthFlag {
-	pl := &passwordLengthFlag{
+	return &passwordLengthFlag{
 		name:      "password-length",
 		usage:     "Length of password to be generated.",
 		value:     15,
 		isCommand: false,
 	}
-	return pl
 }
 
 func (pl *passwordLengthFlag) Name() string {
