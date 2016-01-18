@@ -34,4 +34,7 @@ func Test_password_against_invalid_password_length(t *testing.T) {
 	if err == nil {
 		t.Error("Should have received an error")
 	}
+	// TODO: password with symbols
+	// TODO: password without symbols
+	// TODO: password with positive length not nil
 }
