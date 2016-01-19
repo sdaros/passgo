@@ -16,7 +16,7 @@ type noSymbolsFlag struct {
 func NewNoSymbolsFlag() *noSymbolsFlag {
 	return &noSymbolsFlag{
 		name:      "no-symbols",
-		usage:     "Use only alphabetic characters",
+		usage:     "Do not use special symbols",
 		value:     false,
 		isCommand: false,
 	}
@@ -46,3 +46,5 @@ func (ns *noSymbolsFlag) Set(value string) (err error) {
 	ns.value = noSymb
 	return nil
 }
+
+func (ns *noSymbolsFlag) IsBoolFlag() bool { return true }

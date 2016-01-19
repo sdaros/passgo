@@ -50,7 +50,7 @@ func NewPassword() *Password {
 // composed of random elements chosen from a rune pool
 func (p *Password) Execute(env *environment.Env) (*CommandResult, error) {
 	p.Env = env
-	p.applyCommandOptions(env)
+	p.applyCommandFlags(env)
 	if err := p.validate(); err != nil {
 		return new(CommandResult), err
 	}
@@ -88,10 +88,9 @@ func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 	return p.Int(len(runePool) - 1)
 }
 
-func (p *Password) applyCommandOptions(env *environment.Env) {
-	// load CommandOptions from cli flags
+func (p *Password) applyCommandFlags(env *environment.Env) {
 	p.passwordLength = env.Lookup("password-length").(*passwordLengthFlag)
-	// TODO: load noSymbols
+	p.noSymbols = env.Lookup("no-symbols").(*noSymbolsFlag)
 }
 
 func (p *Password) validate() (err error) {
