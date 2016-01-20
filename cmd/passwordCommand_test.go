@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	_ "github.com/sdaros/passgo/entropy"
-	"github.com/sdaros/passgo/environment"
 	"testing"
 	"unicode"
 )
@@ -15,42 +13,44 @@ func (tv testVector) String() string {
 	return fmt.Sprintf("%v", string(tv))
 }
 
-// Password() should failed
 func Test_password_against_invalid_password_length(t *testing.T) {
-	env := environment.Null()
 	command := NewPassword()
-	passwordLengthFlag := NewPasswordLengthFlag()
-	noSymbolsFlag := NewNoSymbolsFlag()
-	env.Register("password-length", passwordLengthFlag)
-	env.Register("no-symbols", noSymbolsFlag)
 
 	// passwordLengthFlag too short
-	passwordLengthFlag.value = 0
-	_, err := command.Execute(env)
+	command.passwordLength.value = 0
+	_, err := command.Execute()
 	if err == nil {
 		t.Error("Should have received an error")
 	}
 	// passwordLengthFlag too long
-	passwordLengthFlag.value = 257
-	env.Register("password-length", passwordLengthFlag)
-	_, err = command.Execute(env)
+	command.passwordLength.value = 257
+	_, err = command.Execute()
 	if err == nil {
 		t.Error("Should have received an error")
 	}
 }
 
-func Test_password_with_and_without_symbols(t *testing.T) {
-	env := environment.Null()
+func Test_password_matches_a_provided_length(t *testing.T) {
 	command := NewPassword()
-	passwordLengthFlag := NewPasswordLengthFlag()
-	noSymbolsFlag := NewNoSymbolsFlag()
+
+	command.passwordLength.value = 256
+	command.noSymbols.value = false
+	cmdResult, err := command.Execute()
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+	if cmdResult == nil || len(cmdResult.Value.(string)) != 256 {
+		t.Errorf("Expected positive non nil length of password")
+	}
+}
+
+func Test_password_with_and_without_symbols(t *testing.T) {
+	command := NewPassword()
 
 	// password should be generated with symbols
-	passwordLengthFlag.value = 50
-	noSymbolsFlag.value = false
-	env.Register("password-length", passwordLengthFlag)
-	env.Register("no-symbols", noSymbolsFlag)
-	cmdResult, err := command.Execute(env)
+	command.passwordLength.value = 50
+	command.noSymbols.value = false
+	cmdResult, err := command.Execute()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
@@ -66,11 +66,9 @@ func Test_password_with_and_without_symbols(t *testing.T) {
 		t.Error("Expected to find a symbol in password")
 	}
 	// password should be generated without symbols
-	passwordLengthFlag.value = 50
-	noSymbolsFlag.value = true
-	env.Register("password-length", passwordLengthFlag)
-	env.Register("no-symbols", noSymbolsFlag)
-	cmdResult, err = command.Execute(env)
+	command.passwordLength.value = 50
+	command.noSymbols.value = true
+	cmdResult, err = command.Execute()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
@@ -88,21 +86,10 @@ func Test_password_with_and_without_symbols(t *testing.T) {
 
 }
 
-func Test_password_matches_a_provided_length(t *testing.T) {
-	env := environment.Null()
+func Test_password_with_default_flags(t *testing.T) {
 	command := NewPassword()
-	passwordLengthFlag := NewPasswordLengthFlag()
-	noSymbolsFlag := NewNoSymbolsFlag()
-
-	passwordLengthFlag.value = 256
-	noSymbolsFlag.value = false
-	env.Register("password-length", passwordLengthFlag)
-	env.Register("no-symbols", noSymbolsFlag)
-	cmdResult, err := command.Execute(env)
+	_, err := command.Execute()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
-	}
-	if cmdResult == nil || len(cmdResult.Value.(string)) != 256 {
-		t.Errorf("Expected positive non nil length of password")
 	}
 }

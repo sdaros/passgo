@@ -11,7 +11,7 @@ func main() {
 	if err := cr.ProcessUserInput(env); err != nil {
 		env.Error(err)
 	}
-	result, err := cr.Execute(env)
+	result, err := cr.Execute()
 	if err != nil {
 		env.Error(err)
 	}

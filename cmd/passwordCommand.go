@@ -14,6 +14,7 @@ var (
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
 		'y', 'z'}
+	// TODO: JSON stringify uses HTML_Escape for & < > etc.
 	runesWithSymbols = []rune{
 		'!', '#', '$', '%', '&', '(', ')', '*', '+', ',', '-', '.',
 		'/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
@@ -48,22 +49,20 @@ func NewPassword() *Password {
 
 // Execute validates command options then returns a password
 // composed of random elements chosen from a rune pool
-func (p *Password) Execute(env *environment.Env) (*CommandResult, error) {
-	p.Env = env
-	p.applyCommandFlags(env)
+func (p *Password) Execute() (*CommandResult, error) {
 	if err := p.validate(); err != nil {
-		return new(CommandResult), err
+		return nil, err
 	}
 	if p.noSymbols.value {
 		result, err := p.composePassword(runesNoSymbols)
 		if err != nil {
-			return new(CommandResult), err
+			return nil, err
 		}
 		return &CommandResult{result}, nil
 	}
 	result, err := p.composePassword(runesWithSymbols)
 	if err != nil {
-		return new(CommandResult), err
+		return nil, err
 	}
 	return &CommandResult{result}, nil
 }
@@ -88,9 +87,15 @@ func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 	return p.Int(len(runePool) - 1)
 }
 
-func (p *Password) applyCommandFlags(env *environment.Env) {
-	p.passwordLength = env.Lookup("password-length").(*passwordLengthFlag)
-	p.noSymbols = env.Lookup("no-symbols").(*noSymbolsFlag)
+func (p *Password) SetCommandFlags(env *environment.Env) {
+	plFromFlag := env.Lookup("password-length").(*passwordLengthFlag)
+	nsFromFlag := env.Lookup("no-symbols").(*noSymbolsFlag)
+	if plFromFlag != nil {
+		p.passwordLength = plFromFlag
+	}
+	if nsFromFlag != nil {
+		p.noSymbols = nsFromFlag
+	}
 }
 
 func (p *Password) validate() (err error) {

@@ -1,20 +1,20 @@
 package sealer
 
 import (
-	"golang.org/x/crypto/nacl/secretbox"
 	"github.com/sdaros/passgo/entropy"
+	"golang.org/x/crypto/nacl/secretbox"
 )
 
 const (
-	KeyLength = 32
+	KeyLength   = 32
 	NonceLength = 24
 )
+
 type NaclSecretbox struct {
-  entropyImplementation entropy.Entropy
+	entropyImplementation entropy.Entropy
 }
 
 func (sb *NaclSecretbox) Seal(post postage) (env *Envelope, err error) {
-	// TODO: implement nacl/secretbox
 	nonce, err := generateNonce(sb.entropyImplementation)
 	if err != nil {
 		return nil, err
@@ -24,9 +24,6 @@ func (sb *NaclSecretbox) Seal(post postage) (env *Envelope, err error) {
 	copy(key[:], []byte("Secret Key"))
 	ciphertext = secretbox.Seal(ciphertext, []byte(post.String()), nonce, key)
 	return &Envelope{Message: ciphertext, Nonce: nonce[:]}, nil
-	// TODO: post.key needs to be a *[KeyLength]byte
-	// ciphertext = secretbox.Seal(ciphertext, post.message, nonce, post.key)
-	// return &Envelope{Content: ciphertext, Nonce: nonce}, nil
 }
 
 func (sb *NaclSecretbox) Open(env *Envelope) (secret []byte, err error) {

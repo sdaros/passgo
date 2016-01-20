@@ -1,16 +1,16 @@
 package sealer
 
 import (
-	"github.com/sdaros/passgo/entropy"
 	"errors"
 	"fmt"
+	"github.com/sdaros/passgo/entropy"
 )
 
-// TODO: return these errors eventually
 var (
 	ErrSeal = errors.New("sealer: sealing failed!")
 	ErrOpen = errors.New("sealer: opening failed!")
 )
+
 // naclSecretboxSealer uses nacl/secretbox for symmetric encryption.
 // The crypto/rand library is used as the default entropy source.
 var NaclSecretboxSealer = &NaclSecretbox{entropyImplementation: entropy.CryptoRand}

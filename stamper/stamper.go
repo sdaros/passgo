@@ -4,13 +4,13 @@
 package stamper
 
 import (
-	"github.com/sdaros/passgo/entropy"
 	"errors"
 	"fmt"
+	"github.com/sdaros/passgo/entropy"
 )
 
-// TODO: return this error eventually
 var ErrStamp = errors.New("stamper: stamping failed, check your input parameters.")
+
 // ScryptStamper uses crypto/scrypt as its PBKDF
 var ScryptStamper = &Scrypt{n: 65536, r: 8, p: 1, len: 32,
 	entropyImplementation: entropy.CryptoRand}

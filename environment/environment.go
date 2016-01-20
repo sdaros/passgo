@@ -14,8 +14,6 @@ type Env struct {
 
 // Initialise the environment.
 func Environment(logger Logger, entropy ent.Entropy, registrar *Registrar) *Env {
-	// TODO: Read from config file
-
 	// nil logger does nothing
 	if logger == nil {
 		logger = new(NullLogger)

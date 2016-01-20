@@ -11,8 +11,8 @@ import (
 func Parse(env *environment.Env) {
 	flagSet := flag.NewFlagSet("passgoFlags", flag.ExitOnError)
 	setUsage(flagSet)
-	env.Register("passgoFlags", passgoFlags)
-	flagsToParse := env.Lookup("passgoFlags").([]PassgoFlag)
+	env.Register("passgoFlags", cmd.PassgoFlags)
+	flagsToParse := env.Lookup("passgoFlags").([]cmd.PassgoFlag)
 	for _, flag := range flagsToParse {
 		flagSet.Var(flag, flag.Name(), flag.Usage())
 		env.Register(flag.Name(), flag)
@@ -26,8 +26,10 @@ func Parse(env *environment.Env) {
 
 func toRegisterCommandInEnv(env *environment.Env) func(*flag.Flag) {
 	fn := func(f *flag.Flag) {
-		if f.Value.(PassgoFlag).IsCommand() {
-			commandToExecute := cmd.PassgoCommands[f.Value.(PassgoFlag).Name()]
+		currentFlag := f.Value.(cmd.PassgoFlag)
+		if currentFlag.IsCommand() {
+			commandToExecute := cmd.PassgoCommands[currentFlag.Name()]
+			commandToExecute.SetCommandFlags(env)
 			env.Register("commandToExecute", commandToExecute)
 		}
 	}

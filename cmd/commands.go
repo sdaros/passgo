@@ -8,11 +8,12 @@ import (
 type (
 	// Executable is implemented by all commands in passgo.
 	Executable interface {
-		Execute(*environment.Env) (*CommandResult, error)
+		Execute() (*CommandResult, error)
+		SetCommandFlags(*environment.Env)
 		Name() string
 	}
 	// ExecuteFunc holds the Execute() method from an Executable Command.
-	ExecuteFunc func(*environment.Env) (*CommandResult, error)
+	ExecuteFunc func() (*CommandResult, error)
 	// CommandResult returned by a command.
 	CommandResult struct {
 		Value interface{} `json:"value"`
@@ -36,7 +37,6 @@ func (c *CommandResult) String() (string, error) {
 
 func init() {
 	for _, cmd := range passgoCommands {
-		cmdName := cmd.Name()
-		PassgoCommands[cmdName] = cmd
+		PassgoCommands[cmd.Name()] = cmd
 	}
 }
