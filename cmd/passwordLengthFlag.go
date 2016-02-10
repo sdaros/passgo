@@ -36,7 +36,7 @@ func (pl *passwordLengthFlag) IsCommand() bool {
 
 // String is provided to satisfy flag.Value interface.
 func (pl *passwordLengthFlag) String() string {
-	return fmt.Sprint(*pl)
+	return fmt.Sprint(pl.value)
 }
 
 // Set sets the value for the passwordLengthFlag and validates the range.

@@ -1,14 +1,17 @@
 package cmd
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/sdaros/passgo/app"
+	"strconv"
 )
 
 var (
 	// Define a range of characters that can be used when generating random passwords.
 	runesNoSymbols = []rune{
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B',
+		'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
 		'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
@@ -17,7 +20,8 @@ var (
 	runesWithSymbols = []rune{
 		'!', '#', '$', '%', '&', '(', ')', '*', '+', ',', '-', '.',
 		'/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':',
-		';', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+		';', '=', '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+		'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
 		'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[', ']', '^', '_', '`',
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
@@ -26,13 +30,13 @@ var (
 		" to generate password")
 )
 
-// Password returns a password to the caller
-// based on the parameters provided to it.
+// Password returns a password to the caller based on the parameters provided to it.
 type Password struct {
 	name           string
 	execute        func() (string, error)
 	noSymbols      *noSymbolsFlag
 	passwordLength *passwordLengthFlag
+	result         string
 	*app.App
 }
 
@@ -60,13 +64,15 @@ func passwordExecuteFn(p *Password) func() (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return result, nil
+			p.result = result
+			return p.String()
 		}
 		result, err := p.composePassword(runesWithSymbols)
 		if err != nil {
 			return "", err
 		}
-		return result, nil
+		p.result = result
+		return p.String()
 
 	}
 	return passwordExecuteFn
@@ -115,4 +121,29 @@ func (p *Password) validate() (err error) {
 
 func (p *Password) Name() string {
 	return p.name
+}
+
+func (p *Password) String() (string, error) {
+	type PasswordResult struct {
+		Name           string
+		NoSymbols      string
+		PasswordLength int
+		Result         string
+	}
+	passwordLength, err := strconv.Atoi(p.passwordLength.String())
+	if err != nil {
+		return "", nil
+	}
+	pResult := &PasswordResult{
+		p.name,
+		p.noSymbols.String(),
+		passwordLength,
+		p.result,
+	}
+	jsonResult, err := json.MarshalIndent(pResult, " ", "\t")
+	if err != nil {
+		return "", err
+	}
+	return string(jsonResult), nil
+
 }

@@ -35,7 +35,7 @@ func (ns *noSymbolsFlag) IsCommand() bool {
 }
 
 func (ns *noSymbolsFlag) String() string {
-	return fmt.Sprint(*ns)
+	return fmt.Sprint(ns.value)
 }
 
 func (ns *noSymbolsFlag) Set(value string) (err error) {

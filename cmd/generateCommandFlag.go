@@ -1,9 +1,5 @@
 package cmd
 
-import (
-	"fmt"
-)
-
 type generateCommandFlag struct {
 	name      string `schema.org: "/name"`
 	usage     string
@@ -32,7 +28,7 @@ func (g *generateCommandFlag) IsCommand() bool {
 }
 
 func (g *generateCommandFlag) String() string {
-	return fmt.Sprint(*g)
+	return ""
 }
 
 func (g *generateCommandFlag) Set(value string) (err error) {
