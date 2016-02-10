@@ -1,37 +1,24 @@
 package cmd
 
 import (
-	"encoding/json"
+	"github.com/sdaros/passgo/app"
 )
 
 type (
 	// Command supported by passgo.
-	Command struct {
-		Executable
-		Result interface{}
-	}
-	// Executable is a command in passgo that can be executed.
-	Executable interface {
-		Execute() error
-		ApplyCommandFlags()
+	Command interface {
 		Name() string
+		ExecuteFn() func() (string, error)
+		ApplyCommandFlags(*app.App)
 	}
 )
 
 var (
-	passgoCommands = []Executable{
+	passgoCommands = []Command{
 		NewPassword(),
 	}
-	PassgoCommands = make(map[string]Executable)
+	PassgoCommands = make(map[string]Command)
 )
-
-func (c *Command) String() (string, error) {
-	jsonResult, err := json.MarshalIndent(c, " ", "\t")
-	if err != nil {
-		return "", err
-	}
-	return string(jsonResult), nil
-}
 
 func init() {
 	for _, cmd := range passgoCommands {

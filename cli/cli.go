@@ -30,7 +30,7 @@ func thenRegisterCommandToExecute(passgo *app.App) func(*flag.Flag) {
 		currentFlag := f.Value.(cmd.PassgoFlag)
 		if currentFlag.IsCommand() {
 			commandToExecute := cmd.PassgoCommands[currentFlag.Name()]
-			commandToExecute.ApplyCommandFlags()
+			commandToExecute.ApplyCommandFlags(passgo)
 			passgo.Register("commandToExecute", commandToExecute)
 		}
 	}

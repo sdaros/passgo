@@ -14,12 +14,12 @@ var (
 // Generate creates a new secret by taking the provided Url and Username and
 // appending a randomly generated password.
 type Generate struct {
-	Command
-	name           string        `schema.org: "/name"`
-	userName       *userNameFlag `schema.org: "/username"`
-	url            *urlFlag      `schema.org: "/url"`
+	name           string `schema.org: "/name"`
+	userName       *userNameFlag
+	url            *urlFlag
 	passwordLength *passwordLengthFlag
 	noSymbols      *noSymbolsFlag
+	result         string
 	*app.App
 }
 
@@ -37,13 +37,16 @@ func NewGenerate() *Generate {
 
 // Execute validates command options then returns a
 // an Envelope with the sealed Secret.
-func (g *Generate) Execute() error {
-	secret := new(mailbag.Secret)
-	secret.SetUrl("foobar")
-	g.userName.value = secret.UserName()
-	g.url.value = secret.Url()
-	g.Result = g
-	return nil
+func (g *Generate) Execute() func() error {
+	generateFn := func() error {
+		secret := new(mailbag.Secret)
+		secret.SetUrl("foobar")
+		g.userName.value = secret.UserName()
+		g.url.value = secret.Url()
+		g.result = "heelo"
+		return nil
+	}
+	return generateFn
 }
 
 // NEXT: responsible for executing Password() and doing
