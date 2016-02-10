@@ -3,34 +3,35 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"github.com/sdaros/passgo/app"
 	"github.com/sdaros/passgo/cmd"
-	"github.com/sdaros/passgo/environment"
 	"os"
 )
 
-func Parse(env *environment.Env) {
+func Parse(passgo *app.App) {
 	flagSet := flag.NewFlagSet("passgoFlags", flag.ExitOnError)
 	setUsage(flagSet)
-	env.Register("passgoFlags", cmd.PassgoFlags)
-	flagsToParse := env.Lookup("passgoFlags").([]cmd.PassgoFlag)
+	passgo.Register("passgoFlags", cmd.PassgoFlags)
+	flagsToParse := passgo.Lookup("passgoFlags").([]cmd.PassgoFlag)
 	for _, flag := range flagsToParse {
 		flagSet.Var(flag, flag.Name(), flag.Usage())
-		env.Register(flag.Name(), flag)
+		passgo.Register(flag.Name(), flag)
 	}
 	flagSet.Parse(os.Args[1:])
-	flagSet.Visit(toRegisterCommandInEnv(env))
-	if env.Lookup("commandToExecute") == nil {
+	flagSet.Visit(thenRegisterCommandToExecute(passgo))
+	// No command was provided by the user on the command line; print Usage.
+	if passgo.Lookup("commandToExecute") == nil {
 		flagSet.Usage()
 	}
 }
 
-func toRegisterCommandInEnv(env *environment.Env) func(*flag.Flag) {
+func thenRegisterCommandToExecute(passgo *app.App) func(*flag.Flag) {
 	fn := func(f *flag.Flag) {
 		currentFlag := f.Value.(cmd.PassgoFlag)
 		if currentFlag.IsCommand() {
 			commandToExecute := cmd.PassgoCommands[currentFlag.Name()]
-			commandToExecute.SetCommandFlags(env)
-			env.Register("commandToExecute", commandToExecute)
+			commandToExecute.ApplyCommandFlags()
+			passgo.Register("commandToExecute", commandToExecute)
 		}
 	}
 	return fn

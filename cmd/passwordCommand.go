@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"errors"
-	"github.com/sdaros/passgo/environment"
+	"github.com/sdaros/passgo/app"
 )
 
 var (
@@ -31,10 +31,11 @@ var (
 // Password returns a password to the caller
 // based on the parameters provided to it.
 type Password struct {
+	Command
 	name           string `schema.org: "/name"`
 	noSymbols      *noSymbolsFlag
 	passwordLength *passwordLengthFlag
-	*environment.Env
+	*app.App
 }
 
 // NewPassword returns a password command with default values
@@ -43,42 +44,40 @@ func NewPassword() *Password {
 		name:           "password",
 		noSymbols:      NewNoSymbolsFlag(),
 		passwordLength: NewPasswordLengthFlag(),
-		Env:            environment.Null(),
+		App:            app.Null(),
 	}
 }
 
 // Execute validates command options then returns a password
 // composed of random elements chosen from a rune pool
-func (p *Password) Execute() (*CommandResult, error) {
+func (p *Password) Execute() error {
 	if err := p.validate(); err != nil {
-		return nil, err
+		return err
 	}
 	if p.noSymbols.value {
-		result, err := p.composePassword(runesNoSymbols)
-		if err != nil {
-			return nil, err
+		if err := p.composePassword(runesNoSymbols); err != nil {
+			return err
 		}
-		return &CommandResult{result}, nil
 	}
-	result, err := p.composePassword(runesWithSymbols)
-	if err != nil {
-		return nil, err
+	if err := p.composePassword(runesWithSymbols); err != nil {
+		return err
 	}
-	return &CommandResult{result}, nil
+	return nil
 }
 
 // composePassword of passwordLength by selecting random elements
 // from an ASCII subset (runePool).
-func (p *Password) composePassword(runePool []rune) (string, error) {
+func (p *Password) composePassword(runePool []rune) error {
 	var password []rune
 	for i := 0; i < p.passwordLength.value; i++ {
 		runeAtIndex, err := p.randomIndexFromRunePool(runePool)
 		if err != nil {
-			return "", ErrPassword
+			return ErrPassword
 		}
 		password = append(password, runePool[runeAtIndex])
 	}
-	return string(password), nil
+	p.Result = string(password)
+	return nil
 }
 
 // randomIndexFromRunePool returns index from Rune Pool using the
@@ -87,15 +86,15 @@ func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 	return p.Int(len(runePool) - 1)
 }
 
-func (p *Password) SetCommandFlags(env *environment.Env) {
-	plFromFlag := env.Lookup("password-length").(*passwordLengthFlag)
-	nsFromFlag := env.Lookup("no-symbols").(*noSymbolsFlag)
+func (p *Password) ApplyCommandFlags() {
+	plFromFlag := p.App.Lookup("password-length").(*passwordLengthFlag)
+	nsFromFlag := p.App.Lookup("no-symbols").(*noSymbolsFlag)
 	if plFromFlag != nil {
 		p.passwordLength = plFromFlag
-	}
+	} // else, Password length flag not provided; use default.
 	if nsFromFlag != nil {
 		p.noSymbols = nsFromFlag
-	}
+	} // else, No symbols flag not provided; use default.
 }
 
 func (p *Password) validate() (err error) {

@@ -1,12 +1,18 @@
 package cmd
 
 import (
+	"fmt"
 	"testing"
 )
 
-// NEXT: fill out tests for generate
 func Test_generate_against_invalid_flags(t *testing.T) {
-	if false {
+	command := NewGenerate()
+
+	result, err := command.Execute()
+	if err != nil {
 		t.Errorf("fail")
 	}
+
+	fmt.Printf("command result: %#v", result.Value.(*Generate).url)
+
 }

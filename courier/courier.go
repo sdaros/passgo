@@ -16,10 +16,20 @@ type Courier struct {
 	Execute cmd.ExecuteFunc
 }
 
+// NEXT:- Run should be implemented in an `App` Object
+//	- Run should encapsulate Process() and Display()
+func (c *Courier) Run(env *environment.Env) {
+	return
+}
+
 func (c *Courier) ProcessUserInput(env *environment.Env) error {
 	cli.Parse(env)
 	c.Execute = env.Lookup("commandToExecute").(cmd.Executable).Execute
 	return nil
+}
+
+func (c *Courier) DisplayCommandResult(*cmd.CommandResult, error) {
+	return
 }
 
 func readFromStdIn() ([]byte, error) {

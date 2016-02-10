@@ -2,21 +2,19 @@ package cmd
 
 import (
 	"encoding/json"
-	"github.com/sdaros/passgo/environment"
 )
 
 type (
-	// Executable is implemented by all commands in passgo.
-	Executable interface {
-		Execute() (*CommandResult, error)
-		SetCommandFlags(*environment.Env)
-		Name() string
+	// Command supported by passgo.
+	Command struct {
+		Executable
+		Result interface{}
 	}
-	// ExecuteFunc holds the Execute() method from an Executable Command.
-	ExecuteFunc func() (*CommandResult, error)
-	// CommandResult returned by a command.
-	CommandResult struct {
-		Value interface{} `json:"value"`
+	// Executable is a command in passgo that can be executed.
+	Executable interface {
+		Execute() error
+		ApplyCommandFlags()
+		Name() string
 	}
 )
 
@@ -27,7 +25,7 @@ var (
 	PassgoCommands = make(map[string]Executable)
 )
 
-func (c *CommandResult) String() (string, error) {
+func (c *Command) String() (string, error) {
 	jsonResult, err := json.MarshalIndent(c, " ", "\t")
 	if err != nil {
 		return "", err
