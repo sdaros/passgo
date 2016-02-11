@@ -17,15 +17,16 @@ type Generate struct {
 	name           string `schema.org: "/name"`
 	userName       *userNameFlag
 	url            *urlFlag
+	execute        func() (*CmdResult, error)
 	passwordLength *passwordLengthFlag
 	noSymbols      *noSymbolsFlag
-	result         string
+	result         *CmdResult
 	*app.App
 }
 
 // NewGenerate returns a secret with default values
 func NewGenerate() *Generate {
-	return &Generate{
+	generate := &Generate{
 		name:           "generate",
 		userName:       NewUserNameFlag(),
 		url:            NewUrlFlag(),
@@ -33,21 +34,25 @@ func NewGenerate() *Generate {
 		passwordLength: NewPasswordLengthFlag(),
 		App:            app.Null(),
 	}
+	generate.execute = generateExecuteFn(generate)
+	return generate
 }
 
-// Execute validates command options then returns a
+// generateExecuteFn validates command options then returns a
 // an Envelope with the sealed Secret.
-func (g *Generate) Execute() func() error {
-	generateFn := func() error {
+func generateExecuteFn(g *Generate) func() (*CmdResult, error) {
+	generateFn := func() (*CmdResult, error) {
 		secret := new(mailbag.Secret)
 		secret.SetUrl("foobar")
 		g.userName.value = secret.UserName()
 		g.url.value = secret.Url()
-		g.result = "heelo"
-		return nil
+		g.result = &CmdResult{Value: "heelo"}
+		return g.result, nil
 	}
 	return generateFn
 }
+
+func (g *Generate) ExecuteFn() func() (*CmdResult, error) { return g.execute }
 
 // NEXT: responsible for executing Password() and doing
 // something with the value.

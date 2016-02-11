@@ -28,8 +28,6 @@ func Passgo(env *environment.Env, registrar *Registrar) *App {
 	if env == nil {
 		env = environment.Null()
 	}
-	// NEXT: registrar should be implemented as a channel
-	// in Passgo
 	if registrar == nil {
 		registrar = new(Registrar)
 		registrar.values = make(map[string]interface{})

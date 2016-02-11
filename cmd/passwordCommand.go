@@ -33,10 +33,10 @@ var (
 // Password returns a password to the caller based on the parameters provided to it.
 type Password struct {
 	name           string
-	execute        func() (string, error)
+	execute        func() (*CmdResult, error)
 	noSymbols      *noSymbolsFlag
 	passwordLength *passwordLengthFlag
-	result         string
+	result         *CmdResult
 	*app.App
 }
 
@@ -54,31 +54,31 @@ func NewPassword() *Password {
 
 // passwordExecuteFn validates command options then returns a password
 // composed of random elements chosen from a rune pool
-func passwordExecuteFn(p *Password) func() (string, error) {
-	passwordExecuteFn := func() (string, error) {
+func passwordExecuteFn(p *Password) func() (*CmdResult, error) {
+	passwordExecuteFn := func() (*CmdResult, error) {
 		if err := p.validate(); err != nil {
-			return "", err
+			return nil, err
 		}
 		if p.noSymbols.value {
 			result, err := p.composePassword(runesNoSymbols)
 			if err != nil {
-				return "", err
+				return nil, err
 			}
-			p.result = result
-			return p.String()
+			p.result = &CmdResult{Value: result}
+			return p.result, nil
 		}
 		result, err := p.composePassword(runesWithSymbols)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		p.result = result
-		return p.String()
+		p.result = &CmdResult{Value: result}
+		return p.result, nil
 
 	}
 	return passwordExecuteFn
 }
 
-func (p *Password) ExecuteFn() func() (string, error) { return p.execute }
+func (p *Password) ExecuteFn() func() (*CmdResult, error) { return p.execute }
 
 // composePassword of passwordLength by selecting random elements
 // from an ASCII subset (runePool).
@@ -123,14 +123,19 @@ func (p *Password) Name() string {
 	return p.name
 }
 
-func (p *Password) String() (string, error) {
+func (p *Password) Jsonify() (string, error) {
 	type PasswordResult struct {
 		Name           string
 		NoSymbols      string
 		PasswordLength int
-		Result         string
+		CmdResult      string `json: "commandResult"`
 	}
+	// ATTN: coupling with passwordLengthFlag
 	passwordLength, err := strconv.Atoi(p.passwordLength.String())
+	if err != nil {
+		return "", nil
+	}
+	cmdResult, err := p.result.Jsonify()
 	if err != nil {
 		return "", nil
 	}
@@ -138,7 +143,7 @@ func (p *Password) String() (string, error) {
 		p.name,
 		p.noSymbols.String(),
 		passwordLength,
-		p.result,
+		cmdResult,
 	}
 	jsonResult, err := json.MarshalIndent(pResult, " ", "\t")
 	if err != nil {

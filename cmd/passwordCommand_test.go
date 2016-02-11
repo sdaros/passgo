@@ -41,7 +41,7 @@ func Test_password_matches_a_provided_length(t *testing.T) {
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
-	if result == "" || len(result) != 256 {
+	if result.String() == "" || len(result.String()) != 256 {
 		t.Errorf("Expected positive non nil length of password")
 	}
 }
@@ -51,14 +51,14 @@ func Test_password_with_and_without_symbols(t *testing.T) {
 	exec := command.execute
 
 	// password should be generated with symbols
-	command.passwordLength.value = 50
+	command.passwordLength.value = 256
 	command.noSymbols.value = false
 	result, err := exec()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 	isSymbolFound := false
-	for _, r := range result {
+	for _, r := range result.String() {
 		if unicode.IsSymbol(r) {
 			isSymbolFound = true
 			break
@@ -68,14 +68,14 @@ func Test_password_with_and_without_symbols(t *testing.T) {
 		t.Error("Expected to find a symbol in password")
 	}
 	// password should be generated without symbols
-	command.passwordLength.value = 50
+	command.passwordLength.value = 256
 	command.noSymbols.value = true
 	result, err = exec()
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 	isSymbolFound = false
-	for _, r := range result {
+	for _, r := range result.String() {
 		if unicode.IsSymbol(r) {
 			isSymbolFound = true
 			break

@@ -22,11 +22,11 @@ func processInput(passgo *app.App) (result string, err error) {
 	cli.Parse(passgo)
 	command := passgo.Lookup("commandToExecute").(cmd.Command)
 	execute := command.ExecuteFn()
-	result, err = execute()
+	cmdResult, err := execute()
 	if err != nil {
 		return "", err
 	}
-	return result, nil
+	return cmdResult.Jsonify()
 
 }
 
