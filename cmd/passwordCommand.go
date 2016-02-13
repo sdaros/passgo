@@ -109,6 +109,7 @@ func (p *Password) ApplyCommandFlags(passgo *app.App) {
 	if nsFromFlag != nil {
 		p.noSymbols = nsFromFlag
 	} // else, No symbols flag not provided; use default.
+	p.App = passgo
 }
 
 func (p *Password) validate() (err error) {

@@ -46,19 +46,36 @@ func generateExecuteFn(g *Generate) func() (*CmdResult, error) {
 		secret.SetUrl("foobar")
 		g.userName.value = secret.UserName()
 		g.url.value = secret.Url()
+		// get sub
 		g.result = &CmdResult{Value: "heelo"}
 		return g.result, nil
 	}
 	return generateFn
 }
 
+// ExecuteFn return an Envelope with the sealed Secret.
 func (g *Generate) ExecuteFn() func() (*CmdResult, error) { return g.execute }
 
-// NEXT: responsible for executing Password() and doing
-// something with the value.
-// ExecuteSubCommands executes dependencies required by Generate
-func (g *Generate) executeSubCommands() error {
-	return nil
+func (g *Generate) test() []func() string {
+	var fns []func() string
+	fn := func() string { return "bar" }
+	fns = append(fns, fn)
+	return fns
+
+}
+
+// executeSubCommands executes dependencies (subcommands) required by Generate
+func (g *Generate) executeSubCommands() []func() (*CmdResult, error) {
+	var executeSubCommandsFuncs []func() (*CmdResult, error)
+	passwordSubCommandFn := func() (*CmdResult, error) {
+		p := NewPassword()
+		// Apply command flags given to generate through app
+		p.ApplyCommandFlags(g.App)
+		// NEXT: Why does it think there aren't enough commands to return?
+		return p.ExecuteFn()
+	}
+	executeSubCommandsFuncs = append(executeSubCommandsFuncs, passwordSubCommandFn)
+	return executeSubCommandsFuncs
 }
 
 func (g *Generate) ApplyCommandFlags() {
