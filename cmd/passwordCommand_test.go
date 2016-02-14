@@ -6,6 +6,8 @@ import (
 	"unicode"
 )
 
+// NEXT: refactor test to use table
+// see github.com/golang/go/wiki/TableDrivenTests
 type testVector string
 
 // testVector must implement fmt.Stringer

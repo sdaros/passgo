@@ -42,49 +42,68 @@ func NewGenerate() *Generate {
 // an Envelope with the sealed Secret.
 func generateExecuteFn(g *Generate) func() (*CmdResult, error) {
 	generateFn := func() (*CmdResult, error) {
-		secret := new(mailbag.Secret)
-		secret.SetUrl("foobar")
-		g.userName.value = secret.UserName()
-		g.url.value = secret.Url()
-		// get sub
-		g.result = &CmdResult{Value: "heelo"}
-		return g.result, nil
+		if err := g.validate(); err != nil {
+			return nil, err
+		}
+		g.ApplyCommandFlags(g.App)
+		passwordSubCommand := g.executeSubCommands()[0]
+		passwordCmdResult, err := passwordSubCommand()
+		if err != nil {
+			return nil, err
+		}
+		g.result = passwordCmdResult
+		secret := populateSecret(g)
+		return &CmdResult{Value: secret.Password()}, nil
 	}
 	return generateFn
+}
+
+func populateSecret(g *Generate) *mailbag.Secret {
+	secret := new(mailbag.Secret)
+	secret.SetPassword(g.result.String())
+	secret.SetUserName(g.userName.value)
+	secret.SetUrl(g.url.value)
+	secret.SetNote("")
+	return secret
 }
 
 // ExecuteFn return an Envelope with the sealed Secret.
 func (g *Generate) ExecuteFn() func() (*CmdResult, error) { return g.execute }
 
-func (g *Generate) test() []func() string {
-	var fns []func() string
-	fn := func() string { return "bar" }
-	fns = append(fns, fn)
-	return fns
-
+// executeSubCommands executes dependencies (subcommands) required by Generate.
+// Generate is dependent on only the Password subcommand.
+func (g *Generate) executeSubCommands() [1]func() (*CmdResult, error) {
+	var executeSubCommandFuncs [1]func() (*CmdResult, error)
+	passwordSubCommand := NewPassword()
+	// Apply command flags given to generate through app
+	passwordSubCommand.ApplyCommandFlags(g.App)
+	executeSubCommandFuncs[0] = passwordSubCommand.ExecuteFn()
+	return executeSubCommandFuncs
 }
 
-// executeSubCommands executes dependencies (subcommands) required by Generate
-func (g *Generate) executeSubCommands() []func() (*CmdResult, error) {
-	var executeSubCommandsFuncs []func() (*CmdResult, error)
-	passwordSubCommandFn := func() (*CmdResult, error) {
-		p := NewPassword()
-		// Apply command flags given to generate through app
-		p.ApplyCommandFlags(g.App)
-		// NEXT: Why does it think there aren't enough commands to return?
-		return p.ExecuteFn()
-	}
-	executeSubCommandsFuncs = append(executeSubCommandsFuncs, passwordSubCommandFn)
-	return executeSubCommandsFuncs
-}
-
-func (g *Generate) ApplyCommandFlags() {
-	unFromFlag := g.App.Lookup("user-name").(*userNameFlag)
-	urlFromFlag := g.App.Lookup("url").(*urlFlag)
+func (g *Generate) ApplyCommandFlags(passgo *app.App) {
+	unFromFlag := passgo.Lookup("user-name").(*userNameFlag)
+	urlFromFlag := passgo.Lookup("url").(*urlFlag)
+	plFromFlag := passgo.Lookup("password-length").(*passwordLengthFlag)
+	nsFromFlag := passgo.Lookup("no-symbols").(*noSymbolsFlag)
 	if unFromFlag != nil {
 		g.userName = unFromFlag
-	} // User name flag not provided; use default.
+	}
 	if urlFromFlag != nil {
 		g.url = urlFromFlag
-	} // Url flag not provided; use default.
+	}
+	if plFromFlag != nil {
+		g.passwordLength = plFromFlag
+	}
+	if nsFromFlag != nil {
+		g.noSymbols = nsFromFlag
+	}
+	g.App = passgo
 }
+
+func (g *Generate) validate() (err error) {
+	// TODO: implement validation
+	return nil
+}
+
+func (g *Generate) Name() string { return g.name }

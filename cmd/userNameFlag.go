@@ -7,7 +7,7 @@ import (
 
 type userNameFlag struct {
 	name      string `schema.org: "/name"`
-	usage     string
+	usage     string `schema.org: "/description"`
 	value     string `schema.org: "/value"`
 	isCommand bool
 }
@@ -15,7 +15,7 @@ type userNameFlag struct {
 // NewUserNameFlag returns a new empty UserNameFlag.
 func NewUserNameFlag() *userNameFlag {
 	return &userNameFlag{
-		name:      "username",
+		name:      "user-name",
 		usage:     "Username associated with a secret.",
 		isCommand: false,
 	}
@@ -35,7 +35,7 @@ func (un *userNameFlag) IsCommand() bool {
 
 // String is provided to satisfy flag.Value interface.
 func (un *userNameFlag) String() string {
-	return fmt.Sprint(*un)
+	return fmt.Sprint(un.value)
 }
 
 // Set sets the value for the userNameFlag and validates it.

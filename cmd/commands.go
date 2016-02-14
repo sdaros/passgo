@@ -20,6 +20,7 @@ type (
 var (
 	passgoCommands = []Command{
 		NewPassword(),
+		NewGenerate(),
 	}
 	PassgoCommands = make(map[string]Command)
 )

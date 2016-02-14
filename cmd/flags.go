@@ -15,6 +15,8 @@ type PassgoFlag interface {
 var PassgoFlags = []PassgoFlag{
 	NewPasswordCommandFlag(),
 	NewNoSymbolsFlag(),
+	NewUrlFlag(),
+	NewUserNameFlag(),
 	NewPasswordLengthFlag(),
 	NewGenerateCommandFlag(),
 }

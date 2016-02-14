@@ -14,5 +14,4 @@ func Test_generate_against_invalid_flags(t *testing.T) {
 	//	}
 	//
 	//	fmt.Printf("command result: %#v", command.Result.(*Generate).url)
-
 }

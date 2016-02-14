@@ -120,9 +120,7 @@ func (p *Password) validate() (err error) {
 	return nil
 }
 
-func (p *Password) Name() string {
-	return p.name
-}
+func (p *Password) Name() string { return p.name }
 
 func (p *Password) Jsonify() (string, error) {
 	type PasswordResult struct {

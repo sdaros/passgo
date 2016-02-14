@@ -10,7 +10,7 @@ type passwordCommandFlag struct {
 func NewPasswordCommandFlag() *passwordCommandFlag {
 	return &passwordCommandFlag{
 		name:      "password",
-		usage:     "Generate a random password.``",
+		usage:     "Generate a random password.",
 		isCommand: true,
 	}
 }

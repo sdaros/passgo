@@ -7,7 +7,7 @@ import (
 
 type urlFlag struct {
 	name      string `schema.org: "/name"`
-	usage     string
+	usage     string `schema.org: "/description"`
 	value     string `schema.org: "/value"`
 	isCommand bool
 }
@@ -35,7 +35,7 @@ func (ur *urlFlag) IsCommand() bool {
 
 // String is provided to satisfy flag.Value interface.
 func (ur *urlFlag) String() string {
-	return fmt.Sprint(*ur)
+	return fmt.Sprint(ur.value)
 }
 
 // Set sets the value for the urlFlag and validates it.

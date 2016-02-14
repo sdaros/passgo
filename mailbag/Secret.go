@@ -18,8 +18,16 @@ func (s *Secret) Password() string {
 	return string(s.password)
 }
 
+func (s *Secret) SetPassword(value string) {
+	s.password = password(value)
+}
+
 func (s *Secret) UserName() string {
 	return string(s.userName)
+}
+
+func (s *Secret) SetUserName(value string) {
+	s.userName = userName(value)
 }
 
 func (s *Secret) Url() string {
@@ -31,4 +39,8 @@ func (s *Secret) SetUrl(value string) {
 
 func (s *Secret) Note() string {
 	return string(s.note)
+}
+
+func (s *Secret) SetNote(value string) {
+	s.note = note(value)
 }
