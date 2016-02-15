@@ -1,3 +1,4 @@
+// NEXT: implement tests
 package cmd
 
 import (
