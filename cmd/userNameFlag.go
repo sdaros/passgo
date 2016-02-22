@@ -51,7 +51,7 @@ func (un *userNameFlag) Set(fromCli string) (err error) {
 func (un *userNameFlag) Validate(fromCli string) (err error) {
 	if !utf8.ValidString(fromCli) {
 		return fmt.Errorf("Expected username to be a valid utf8 string,"+
-			" got %v instead", fromCli)
+			" got %q instead", fromCli)
 	}
 	return nil
 }

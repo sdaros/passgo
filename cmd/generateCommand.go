@@ -42,10 +42,10 @@ func NewGenerate() *Generate {
 // an Envelope with the sealed Secret.
 func generateExecuteFn(g *Generate) func() (*CmdResult, error) {
 	generateFn := func() (*CmdResult, error) {
+		g.ApplyCommandFlagsFrom(g.App)
 		if err := g.validate(); err != nil {
 			return nil, err
 		}
-		g.ApplyCommandFlags(g.App)
 		passwordSubCommand := g.executeSubCommands()[0]
 		passwordCmdResult, err := passwordSubCommand()
 		if err != nil {
@@ -75,34 +75,44 @@ func (g *Generate) ExecuteFn() func() (*CmdResult, error) { return g.execute }
 func (g *Generate) executeSubCommands() [1]func() (*CmdResult, error) {
 	var executeSubCommandFuncs [1]func() (*CmdResult, error)
 	passwordSubCommand := NewPassword()
-	// Apply command flags given to generate through app
-	passwordSubCommand.ApplyCommandFlags(g.App)
+	passwordSubCommand.App = g.App
 	executeSubCommandFuncs[0] = passwordSubCommand.ExecuteFn()
 	return executeSubCommandFuncs
 }
 
-func (g *Generate) ApplyCommandFlags(passgo *app.App) {
-	unFromFlag := passgo.Lookup("user-name").(*userNameFlag)
-	urlFromFlag := passgo.Lookup("url").(*urlFlag)
-	plFromFlag := passgo.Lookup("password-length").(*passwordLengthFlag)
-	nsFromFlag := passgo.Lookup("no-symbols").(*noSymbolsFlag)
-	if unFromFlag != nil {
-		g.userName = unFromFlag
-	}
-	if urlFromFlag != nil {
-		g.url = urlFromFlag
-	}
-	if plFromFlag != nil {
-		g.passwordLength = plFromFlag
-	}
-	if nsFromFlag != nil {
-		g.noSymbols = nsFromFlag
+func (g *Generate) ApplyCommandFlagsFrom(passgo *app.App) error {
+	if passgo == nil {
+		return errors.New("We need a valid Passgo object to retrieve flags")
 	}
 	g.App = passgo
+	if g.App.Lookup("user-name") != nil {
+		unFromFlag := g.App.Lookup("user-name").(*userNameFlag)
+		g.userName = unFromFlag
+	} // else, user-name flag was not provided; so the default will be used.
+	if g.App.Lookup("url") != nil {
+		urlFlag := g.App.Lookup("url").(*urlFlag)
+		g.url = urlFlag
+	} // else, url flag was not provided; so the default will be used.
+	if g.App.Lookup("password-length") != nil {
+		passwordLengthFlag := g.App.Lookup("password-length").(*passwordLengthFlag)
+		g.passwordLength = passwordLengthFlag
+	} // else, password-length flag was not provided; so the default will be used.
+	if g.App.Lookup("no-symbols") != nil {
+		noSymbolsFlag := g.App.Lookup("no-symbols").(*noSymbolsFlag)
+		g.noSymbols = noSymbolsFlag
+	} // else, no-symbols flag was not provided; so the default will be used.
+	return nil
 }
 
 func (g *Generate) validate() (err error) {
-	// TODO: implement validation
+	userName := g.userName.value
+	if err := g.userName.Validate(userName); err != nil {
+		return err
+	}
+	url := g.url.value
+	if err := g.url.Validate(url); err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/sdaros/passgo/app"
-	"strconv"
 )
 
 var (
@@ -40,7 +38,7 @@ type Password struct {
 	*app.App
 }
 
-// NewPassword returns a password command with default values
+// NewPassword returns a password command with default values.
 func NewPassword() *Password {
 	password := &Password{
 		name:           "password",
@@ -56,6 +54,7 @@ func NewPassword() *Password {
 // composed of random elements chosen from a rune pool
 func passwordExecuteFn(p *Password) func() (*CmdResult, error) {
 	passwordExecuteFn := func() (*CmdResult, error) {
+		p.ApplyCommandFlagsFrom(p.App)
 		if err := p.validate(); err != nil {
 			return nil, err
 		}
@@ -100,16 +99,20 @@ func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 	return p.Int(len(runePool) - 1)
 }
 
-func (p *Password) ApplyCommandFlags(passgo *app.App) {
-	plFromFlag := passgo.Lookup("password-length").(*passwordLengthFlag)
-	nsFromFlag := passgo.Lookup("no-symbols").(*noSymbolsFlag)
-	if plFromFlag != nil {
-		p.passwordLength = plFromFlag
-	} // else, Password length flag not provided; use default.
-	if nsFromFlag != nil {
-		p.noSymbols = nsFromFlag
-	} // else, No symbols flag not provided; use default.
+func (p *Password) ApplyCommandFlagsFrom(passgo *app.App) error {
+	if passgo == nil {
+		return errors.New("We need a valid Passgo object to retrieve flags")
+	}
 	p.App = passgo
+	if p.App.Lookup("password-length") != nil {
+		plFromFlag := p.App.Lookup("password-length").(*passwordLengthFlag)
+		p.passwordLength = plFromFlag
+	} // else, password-length flag was not provided; so the default will be used.
+	if p.App.Lookup("no-symbols") != nil {
+		nsFromFlag := p.App.Lookup("no-symbols").(*noSymbolsFlag)
+		p.noSymbols = nsFromFlag
+	} // else, no-symbols flag was not provided; so the default will be used.
+	return nil
 }
 
 func (p *Password) validate() (err error) {
@@ -121,33 +124,3 @@ func (p *Password) validate() (err error) {
 }
 
 func (p *Password) Name() string { return p.name }
-
-func (p *Password) Jsonify() (string, error) {
-	type PasswordResult struct {
-		Name           string
-		NoSymbols      string
-		PasswordLength int
-		CmdResult      string `json: "commandResult"`
-	}
-	// ATTN: coupling with passwordLengthFlag
-	passwordLength, err := strconv.Atoi(p.passwordLength.String())
-	if err != nil {
-		return "", nil
-	}
-	cmdResult, err := p.result.Jsonify()
-	if err != nil {
-		return "", nil
-	}
-	pResult := &PasswordResult{
-		p.name,
-		p.noSymbols.String(),
-		passwordLength,
-		cmdResult,
-	}
-	jsonResult, err := json.MarshalIndent(pResult, " ", "\t")
-	if err != nil {
-		return "", err
-	}
-	return string(jsonResult), nil
-
-}

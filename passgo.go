@@ -26,8 +26,8 @@ func processInput(passgo *app.App) (result string, err error) {
 	if err != nil {
 		return "", err
 	}
-	return cmdResult.Jsonify()
+	return cmdResult.String(), nil
 
 }
 
-func displayOutput(pa *app.App) {}
+func displayOutput(quill io.Writer, passgo *app.App) {}

@@ -2,6 +2,8 @@ package environment
 
 import (
 	ent "github.com/sdaros/passgo/entropy"
+	"github.com/sdaros/passgo/sealer"
+	"github.com/sdaros/passgo/stamper"
 )
 
 // Env is provided as an environment by that is accessible
@@ -9,6 +11,7 @@ import (
 type Env struct {
 	Logger
 	ent.Entropy
+	sealer.
 }
 
 // Initialise the environment.

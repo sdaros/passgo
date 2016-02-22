@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"github.com/sdaros/passgo/app"
 )
 
@@ -10,7 +9,7 @@ type (
 	Command interface {
 		Name() string
 		ExecuteFn() func() (*CmdResult, error)
-		ApplyCommandFlags(*app.App)
+		ApplyCommandFlagsFrom(*app.App) error
 	}
 	CmdResult struct {
 		Value interface{}
@@ -24,24 +23,6 @@ var (
 	}
 	PassgoCommands = make(map[string]Command)
 )
-
-func (c *CmdResult) String() string {
-	switch c.Value.(type) {
-	case string:
-		return c.Value.(string)
-	default:
-		return ""
-	}
-}
-
-func (c *CmdResult) Jsonify() (string, error) {
-	jsonResult, err := json.MarshalIndent(c, " ", "\t")
-	if err != nil {
-		return "", nil
-	}
-	return string(jsonResult), nil
-
-}
 
 func init() {
 	for _, cmd := range passgoCommands {

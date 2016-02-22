@@ -11,6 +11,10 @@ var (
 	ErrOpen = errors.New("sealer: opening failed!")
 )
 
+type Sealer interface {
+	Seal(postage) (env *Envelope, err error)
+}
+
 // naclSecretboxSealer uses nacl/secretbox for symmetric encryption.
 // The crypto/rand library is used as the default entropy source.
 var NaclSecretboxSealer = &NaclSecretbox{entropyImplementation: entropy.CryptoRand}

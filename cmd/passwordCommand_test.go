@@ -1,34 +1,71 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/sdaros/passgo/app"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 	"unicode"
 )
 
-// NEXT: finish test suite with goconvey
-type testVector string
+func TestPasswordRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
+	Convey("Given a Password Command that receives its command flags "+
+		"from the Passgo registrar", t, func() {
+		passgo := app.Null()
+		passgo = registerPasswordCommandFlagsWithPassgoRegistrar(passgo)
+		passwordCmd := NewPassword()
 
-// testVector must implement fmt.Stringer
-func (tv testVector) String() string {
-	return fmt.Sprintf("%v", string(tv))
+		Convey("when we apply those flags to the Password Command", func() {
+			err := passwordCmd.ApplyCommandFlagsFrom(passgo)
+
+			Convey("we should not receive an error", func() {
+
+				So(err, ShouldBeNil)
+			})
+
+			Convey("the value of the password-length flag in Password should equal "+
+				"what was provided to the Passgo registrar", func() {
+
+				So(passwordCmd.passwordLength.value, ShouldEqual, 10)
+			})
+
+			Convey("the value of the no-symbols flag in Password should equal "+
+				"what was provided to the Passgo registrar", func() {
+
+				So(passwordCmd.noSymbols.value, ShouldEqual, false)
+			})
+		})
+
+	})
 }
 
 func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
-	Convey("Given a Password Command to execute", t, func() {
+	Convey("Given a Password Command", t, func() {
 		command := NewPassword()
 		commandExecuteFunc := command.execute
 
-		Convey("When no flags to the command are passed", func() {
+		Convey("When the execute function is called", func() {
+			_, err := commandExecuteFunc()
+
+			Convey("no error should be returned", func() {
+
+				So(err, ShouldBeNil)
+			})
+
+		})
+		Convey("When command flags are not provided", func() {
 			cmdResult, err := commandExecuteFunc()
 
-			Convey("It should apply the default values of the flags", func() {
+			Convey("It should apply the default value for the password-length flag", func() {
 
 				So(err, ShouldBeNil)
 				So(len(cmdResult.String()), ShouldEqual, 15)
-				So(passwordContainsSymbols(cmdResult), ShouldEqual, true)
 
+			})
+			Convey("It should apply the default value for the no-symbols flag", func() {
+				passwordContainsSymbols, err := passwordContainsSymbols(command)
+
+				So(err, ShouldBeNil)
+				So(passwordContainsSymbols, ShouldEqual, true)
 			})
 
 		})
@@ -52,10 +89,10 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 			Convey("The result of the command should be a password "+
 				"that does not contain any symbols (is "+
 				"only alphanumeric [A-Za-z])", func() {
-				cmdResult, err := commandExecuteFunc()
+				passwordContainsSymbols, err := passwordContainsSymbols(command)
 
 				So(err, ShouldBeNil)
-				So(passwordContainsSymbols(cmdResult), ShouldEqual, false)
+				So(passwordContainsSymbols, ShouldEqual, false)
 			})
 		})
 
@@ -64,10 +101,10 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 
 			Convey("The result of the command should be a password "+
 				"that *contains* symbols (see cmd.PasswordCommand)", func() {
-				cmdResult, err := commandExecuteFunc()
+				passwordContainsSymbols, err := passwordContainsSymbols(command)
 
 				So(err, ShouldBeNil)
-				So(passwordContainsSymbols(cmdResult), ShouldEqual, true)
+				So(passwordContainsSymbols, ShouldEqual, true)
 			})
 		})
 
@@ -75,22 +112,33 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 
 }
 
-func passwordContainsSymbols(c *CmdResult) bool {
+func passwordContainsSymbols(p *Password) (bool, error) {
+	// password-length should be sufficiently large.
+	p.passwordLength.value = 256
+	passwordExecuteFn := p.ExecuteFn()
+	cmdResult, err := passwordExecuteFn()
+	if err != nil {
+		return false, err
+	}
+
 	isSymbolFound := false
-	for _, r := range c.String() {
+	for _, r := range cmdResult.String() {
 		if unicode.IsSymbol(r) {
 			isSymbolFound = true
 			break
 		}
 	}
-	return isSymbolFound
+	return isSymbolFound, nil
 }
 
-func Test_password_with_default_flags(t *testing.T) {
-	command := NewPassword()
-	exec := command.execute
-	_, err := exec()
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
+// NEXT: call it something else
+func registerPasswordCommandFlagsWithPassgoRegistrar(passgo *app.App) *app.App {
+	plengthFlag := NewPasswordLengthFlag()
+	plengthFlag.value = 10
+	passgo.Register(plengthFlag.Name(), plengthFlag)
+
+	noSymbolsFlag := NewNoSymbolsFlag()
+	passgo.Register(noSymbolsFlag.Name(), noSymbolsFlag)
+
+	return passgo
 }
