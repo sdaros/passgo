@@ -1,15 +1,16 @@
 package cmd
 
 import (
-	"github.com/sdaros/passgo/stamper"
+	"github.com/sdaros/passgo/app"
+	"github.com/sdaros/passgo/mailbag"
 )
 
-// Stamp returns stamped (encrypted then authenticated) postage.
+// Stamp returns stamped (hashed with a PBKDF) postage.
 type Stamp struct {
 	name    string
-	execute func() (*CmdResult, error)
+	execute func() (CmdResult, error)
 	postage *mailbag.Postage
-	result  *CmdResult
+	result  CmdResult
 	*app.App
 }
 
@@ -17,17 +18,18 @@ type Stamp struct {
 func NewStamp() *Stamp {
 	stamp := &Stamp{
 		name:    "stamp",
-		postage: mailbag.NewPostage(),
+		postage: new(mailbag.Postage),
 		App:     app.Null(),
 	}
 	stamp.execute = stampExecuteFn(stamp)
+	return stamp
 }
 
 // stampExecuteFn returns a Bulla which is the result of stamping
 // the postage plus associated salt.
-func stampExecuteFn(s *Stamp) func() (*CmdResult, error) {
-	stampExecuteFn := func() (*CmdResult, error) {
-
+func stampExecuteFn(s *Stamp) func() (CmdResult, error) {
+	stampExecuteFn := func() (CmdResult, error) {
+		return nil, nil
 	}
-
+	return stampExecuteFn
 }

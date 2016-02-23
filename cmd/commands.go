@@ -8,12 +8,10 @@ type (
 	// Command supported by passgo.
 	Command interface {
 		Name() string
-		ExecuteFn() func() (*CmdResult, error)
+		ExecuteFn() func() (CmdResult, error)
 		ApplyCommandFlagsFrom(*app.App) error
 	}
-	CmdResult struct {
-		Value interface{}
-	}
+	CmdResult interface{}
 )
 
 var (

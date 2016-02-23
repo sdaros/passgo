@@ -58,7 +58,7 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 			Convey("It should apply the default value for the password-length flag", func() {
 
 				So(err, ShouldBeNil)
-				So(len(cmdResult.String()), ShouldEqual, 15)
+				So(len(cmdResult.(string)), ShouldEqual, 15)
 
 			})
 			Convey("It should apply the default value for the no-symbols flag", func() {
@@ -77,7 +77,7 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 				cmdResult, err := commandExecuteFunc()
 
 				So(err, ShouldBeNil)
-				So(len(cmdResult.String()), ShouldEqual, 256)
+				So(len(cmdResult.(string)), ShouldEqual, 256)
 
 			})
 
@@ -120,9 +120,8 @@ func passwordContainsSymbols(p *Password) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	isSymbolFound := false
-	for _, r := range cmdResult.String() {
+	for _, r := range cmdResult.(string) {
 		if unicode.IsSymbol(r) {
 			isSymbolFound = true
 			break
@@ -131,7 +130,6 @@ func passwordContainsSymbols(p *Password) (bool, error) {
 	return isSymbolFound, nil
 }
 
-// NEXT: call it something else
 func registerPasswordCommandFlagsWithPassgoRegistrar(passgo *app.App) *app.App {
 	plengthFlag := NewPasswordLengthFlag()
 	plengthFlag.value = 10

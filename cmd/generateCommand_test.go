@@ -1,4 +1,3 @@
-// NEXT: implement tests
 package cmd
 
 import (
@@ -35,7 +34,7 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 
 		})
 
-		// NEXT: this convey could be compacted into a for loop
+		// TODO: this convey could be compacted into a for loop
 		Convey("when we apply those flags to the Generate Command", func() {
 			err := generateCmd.ApplyCommandFlagsFrom(passgo)
 
@@ -77,10 +76,8 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 	})
 }
 
-// NEXT: continue here
 func TestGenerateCommandValidatesItsCommandFlags(t *testing.T) {
 	Convey("Given a Generate Command with valid command flags", t, func() {
-		passgo := app.Null()
 		Convey("when we call the validate() function", nil)
 	})
 }

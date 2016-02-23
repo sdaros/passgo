@@ -11,17 +11,22 @@ import (
 func Parse(passgo *app.App) {
 	flagSet := flag.NewFlagSet("passgoFlags", flag.ExitOnError)
 	setUsage(flagSet)
+	registerCliFlagsWithPassgoRegistrar(passgo, flagSet)
+	flagSet.Parse(os.Args[1:])
+	flagSet.Visit(thenRegisterCommandToExecute(passgo))
+	if passgo.Lookup("commandToExecute") == nil {
+		// No executable command was provided by the user
+		// on the command line; print Usage.
+		flagSet.Usage()
+	}
+}
+
+func registerCliFlagsWithPassgoRegistrar(passgo *app.App, flagSet *flag.FlagSet) {
 	passgo.Register("passgoFlags", cmd.PassgoFlags)
 	flagsToParse := passgo.Lookup("passgoFlags").([]cmd.PassgoFlag)
 	for _, flag := range flagsToParse {
 		flagSet.Var(flag, flag.Name(), flag.Usage())
 		passgo.Register(flag.Name(), flag)
-	}
-	flagSet.Parse(os.Args[1:])
-	flagSet.Visit(thenRegisterCommandToExecute(passgo))
-	// No command was provided by the user on the command line; print Usage.
-	if passgo.Lookup("commandToExecute") == nil {
-		flagSet.Usage()
 	}
 }
 

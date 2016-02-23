@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"github.com/sdaros/passgo/app"
-	"github.com/sdaros/passgo/mailbag"
 )
 
 var (
@@ -17,10 +16,10 @@ type Generate struct {
 	name           string `schema.org: "/name"`
 	userName       *userNameFlag
 	url            *urlFlag
-	execute        func() (*CmdResult, error)
+	execute        func() (CmdResult, error)
 	passwordLength *passwordLengthFlag
 	noSymbols      *noSymbolsFlag
-	result         *CmdResult
+	result         CmdResult
 	*app.App
 }
 
@@ -40,8 +39,8 @@ func NewGenerate() *Generate {
 
 // generateExecuteFn validates command options then returns a
 // an Envelope with the sealed Secret.
-func generateExecuteFn(g *Generate) func() (*CmdResult, error) {
-	generateFn := func() (*CmdResult, error) {
+func generateExecuteFn(g *Generate) func() (CmdResult, error) {
+	generateFn := func() (CmdResult, error) {
 		g.ApplyCommandFlagsFrom(g.App)
 		if err := g.validate(); err != nil {
 			return nil, err
@@ -52,28 +51,18 @@ func generateExecuteFn(g *Generate) func() (*CmdResult, error) {
 			return nil, err
 		}
 		g.result = passwordCmdResult
-		secret := populateSecret(g)
-		return &CmdResult{Value: secret.Password()}, nil
+		return g.result, nil
 	}
 	return generateFn
 }
 
-func populateSecret(g *Generate) *mailbag.Secret {
-	secret := new(mailbag.Secret)
-	secret.SetPassword(g.result.String())
-	secret.SetUserName(g.userName.value)
-	secret.SetUrl(g.url.value)
-	secret.SetNote("")
-	return secret
-}
-
 // ExecuteFn return an Envelope with the sealed Secret.
-func (g *Generate) ExecuteFn() func() (*CmdResult, error) { return g.execute }
+func (g *Generate) ExecuteFn() func() (CmdResult, error) { return g.execute }
 
 // executeSubCommands executes dependencies (subcommands) required by Generate.
 // Generate is dependent on only the Password subcommand.
-func (g *Generate) executeSubCommands() [1]func() (*CmdResult, error) {
-	var executeSubCommandFuncs [1]func() (*CmdResult, error)
+func (g *Generate) executeSubCommands() [1]func() (CmdResult, error) {
+	var executeSubCommandFuncs [1]func() (CmdResult, error)
 	passwordSubCommand := NewPassword()
 	passwordSubCommand.App = g.App
 	executeSubCommandFuncs[0] = passwordSubCommand.ExecuteFn()

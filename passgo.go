@@ -6,28 +6,33 @@ import (
 	"github.com/sdaros/passgo/cli"
 	"github.com/sdaros/passgo/cmd"
 	"github.com/sdaros/passgo/environment"
+	"io"
+	"os"
 )
 
 func main() {
-	env := environment.Environment(new(environment.StandardLogger), nil)
+	env := environment.Environment(new(environment.StandardLogger), nil, nil)
 	passgo := app.Passgo(env, nil)
-	result, err := processInput(passgo)
-	if err != nil {
+	if err := processInput(passgo); err != nil {
 		passgo.Info("error:\n", err)
 	}
-	fmt.Printf("app output:\n", result)
 }
 
-func processInput(passgo *app.App) (result string, err error) {
+func processInput(passgo *app.App) error {
 	cli.Parse(passgo)
 	command := passgo.Lookup("commandToExecute").(cmd.Command)
 	execute := command.ExecuteFn()
 	cmdResult, err := execute()
 	if err != nil {
-		return "", err
+		return err
 	}
-	return cmdResult.String(), nil
-
+	_, err = displayOutputTo(os.Stdout, cmdResult)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func displayOutput(quill io.Writer, passgo *app.App) {}
+func displayOutputTo(quill io.Writer, cmdResult cmd.CmdResult) (n int, err error) {
+	return fmt.Fprint(quill, cmdResult)
+}
