@@ -11,7 +11,7 @@ import (
 )
 
 type Stamper interface {
-	Stamp(mailbag.Postage) (*mailbag.Bulla, error)
+	Stamp(*mailbag.Postage) (*mailbag.Bulla, error)
 }
 
 var ErrStamp = errors.New("stamper: stamping failed, check your input parameters.")

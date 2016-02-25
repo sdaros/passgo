@@ -4,20 +4,25 @@ package stamper
 import (
 	"bytes"
 	"fmt"
+	"github.com/sdaros/passgo/app"
 	"github.com/sdaros/passgo/entropy"
+	. "github.com/smartystreets/goconvey/convey"
 	"golang.org/x/crypto/scrypt"
 	"testing"
 )
 
-type testVector []byte
+func TestDefaultStamperAgainstCryptoScrypt(t *testing.T) {
+	Convey("Given a postage to stamp", t, func() {
+		postage := new(mailbag.Postage)
+		postage = []byte("p@ssw0rd")
 
-// testVector must implement fmt.Stringer
-func (tv testVector) String() string {
-	return fmt.Sprintf("%v", string(tv))
+		Convey("When using default stamper implementation", func() {
+
+			Convey("")
+
+		})
+	})
 }
-
-// Stamp Method for our Scrypt implementation should returns
-// the same content as golang.org/x/crypto/scrypt.
 func Test_stamp_against_crypto_scrypt_key(t *testing.T) {
 	var tv testVector
 	tv = []byte("StampMe!")

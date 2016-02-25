@@ -29,6 +29,11 @@ func NewStamp() *Stamp {
 // the postage plus associated salt.
 func stampExecuteFn(s *Stamp) func() (CmdResult, error) {
 	stampExecuteFn := func() (CmdResult, error) {
+		s.ApplyCommandFlagsFrom(s.App)
+		if err := s.validate(); err != nil {
+			return nil, err
+		}
+		bulla, err := s.App.Stamp(s.postage)
 		return nil, nil
 	}
 	return stampExecuteFn
