@@ -1,4 +1,4 @@
-package cmd
+package generate
 
 import (
 	. "github.com/smartystreets/goconvey/convey"

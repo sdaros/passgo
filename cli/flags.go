@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 import (
 	"flag"
@@ -6,17 +6,19 @@ import (
 
 // PassgoFlag is parsed when executing commands.
 type PassgoFlag interface {
-	flag.Value
+	IsCommand() bool
 	Name() string
 	Usage() string
-	IsCommand() bool
+	flag.Value
 }
 
 var PassgoFlags = []PassgoFlag{
-	NewPasswordCommandFlag(),
+	NewGenerateFlag(),
 	NewNoSymbolsFlag(),
+	NewPasswordFlag(),
+	NewPasswordLengthFlag(),
+	NewScryptFlag(),
+	NewStampFlag(),
 	NewUrlFlag(),
 	NewUserNameFlag(),
-	NewPasswordLengthFlag(),
-	NewGenerateCommandFlag(),
 }

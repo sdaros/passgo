@@ -2,7 +2,10 @@ package cmd
 
 import (
 	"errors"
+
 	"github.com/sdaros/passgo/app"
+	"github.com/sdaros/passgo/cmd/generate"
+	"github.com/sdaros/passgo/cmd/password"
 )
 
 var (
@@ -13,25 +16,25 @@ var (
 // Generate creates a new secret by taking the provided Url and Username and
 // appending a randomly generated password.
 type Generate struct {
-	name           string `schema.org: "/name"`
-	userName       *userNameFlag
-	url            *urlFlag
-	execute        func() (CmdResult, error)
-	passwordLength *passwordLengthFlag
-	noSymbols      *noSymbolsFlag
-	result         CmdResult
 	*app.App
+	execute        func() (CmdResult, error)
+	name           string
+	noSymbols      *password.NoSymbols
+	passwordLength *password.Length
+	result         CmdResult
+	url            *generate.Url
+	userName       *generate.UserName
 }
 
 // NewGenerate returns a secret with default values
 func NewGenerate() *Generate {
 	generate := &Generate{
-		name:           "generate",
-		userName:       NewUserNameFlag(),
-		url:            NewUrlFlag(),
-		noSymbols:      NewNoSymbolsFlag(),
-		passwordLength: NewPasswordLengthFlag(),
 		App:            app.Null(),
+		name:           "generate",
+		noSymbols:      password.NewNoSymbols(),
+		passwordLength: password.NewLength(),
+		url:            generate.NewUrl(),
+		userName:       generate.NewUserName(),
 	}
 	generate.execute = generateExecuteFn(generate)
 	return generate
@@ -75,31 +78,29 @@ func (g *Generate) ApplyCommandFlagsFrom(passgo *app.App) error {
 	}
 	g.App = passgo
 	if g.App.Lookup("user-name") != nil {
-		unFromFlag := g.App.Lookup("user-name").(*userNameFlag)
-		g.userName = unFromFlag
-	} // else, user-name flag was not provided; so the default will be used.
+		unFromApp := g.App.Lookup("user-name").(*generate.UserName)
+		g.userName = unFromApp
+	} // else, user-name param was not provided; so the default will be used.
 	if g.App.Lookup("url") != nil {
-		urlFlag := g.App.Lookup("url").(*urlFlag)
+		urlFlag := g.App.Lookup("url").(*generate.Url)
 		g.url = urlFlag
-	} // else, url flag was not provided; so the default will be used.
+	} // else, url param was not provided; so the default will be used.
 	if g.App.Lookup("password-length") != nil {
-		passwordLengthFlag := g.App.Lookup("password-length").(*passwordLengthFlag)
+		passwordLengthFlag := g.App.Lookup("password-length").(*password.Length)
 		g.passwordLength = passwordLengthFlag
-	} // else, password-length flag was not provided; so the default will be used.
+	} // else, password-length param was not provided; so the default will be used.
 	if g.App.Lookup("no-symbols") != nil {
-		noSymbolsFlag := g.App.Lookup("no-symbols").(*noSymbolsFlag)
+		noSymbolsFlag := g.App.Lookup("no-symbols").(*password.NoSymbols)
 		g.noSymbols = noSymbolsFlag
-	} // else, no-symbols flag was not provided; so the default will be used.
+	} // else, no-symbols param was not provided; so the default will be used.
 	return nil
 }
 
 func (g *Generate) validate() (err error) {
-	userName := g.userName.value
-	if err := g.userName.Validate(userName); err != nil {
+	if err := g.userName.Validate(nil); err != nil {
 		return err
 	}
-	url := g.url.value
-	if err := g.url.Validate(url); err != nil {
+	if err := g.url.Validate(nil); err != nil {
 		return err
 	}
 	return nil

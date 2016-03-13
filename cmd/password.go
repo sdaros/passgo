@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"errors"
+
 	"github.com/sdaros/passgo/app"
+	"github.com/sdaros/passgo/cmd/password"
 )
 
 var (
@@ -32,8 +34,8 @@ var (
 type Password struct {
 	name           string
 	execute        func() (CmdResult, error)
-	noSymbols      *noSymbolsFlag
-	passwordLength *passwordLengthFlag
+	noSymbols      *password.NoSymbols
+	passwordLength *password.Length
 	result         CmdResult
 	*app.App
 }
@@ -42,8 +44,8 @@ type Password struct {
 func NewPassword() *Password {
 	password := &Password{
 		name:           "password",
-		noSymbols:      NewNoSymbolsFlag(),
-		passwordLength: NewPasswordLengthFlag(),
+		noSymbols:      password.NewNoSymbols(),
+		passwordLength: password.NewLength(),
 		App:            app.Null(),
 	}
 	password.execute = passwordExecuteFn(password)
@@ -58,7 +60,7 @@ func passwordExecuteFn(p *Password) func() (CmdResult, error) {
 		if err := p.validate(); err != nil {
 			return nil, err
 		}
-		if p.noSymbols.value {
+		if p.noSymbols.Value() {
 			result, err := p.composePassword(runesNoSymbols)
 			if err != nil {
 				return nil, err
@@ -83,7 +85,7 @@ func (p *Password) ExecuteFn() func() (CmdResult, error) { return p.execute }
 // from an ASCII subset (runePool).
 func (p *Password) composePassword(runePool []rune) (string, error) {
 	var password []rune
-	for i := 0; i < p.passwordLength.value; i++ {
+	for i := 0; i < p.passwordLength.Value(); i++ {
 		runeAtIndex, err := p.randomIndexFromRunePool(runePool)
 		if err != nil {
 			return "", ErrPassword
@@ -105,19 +107,18 @@ func (p *Password) ApplyCommandFlagsFrom(passgo *app.App) error {
 	}
 	p.App = passgo
 	if p.App.Lookup("password-length") != nil {
-		plFromFlag := p.App.Lookup("password-length").(*passwordLengthFlag)
+		plFromFlag := p.App.Lookup("password-length").(*password.Length)
 		p.passwordLength = plFromFlag
 	} // else, password-length flag was not provided; so the default will be used.
 	if p.App.Lookup("no-symbols") != nil {
-		nsFromFlag := p.App.Lookup("no-symbols").(*noSymbolsFlag)
+		nsFromFlag := p.App.Lookup("no-symbols").(*password.NoSymbols)
 		p.noSymbols = nsFromFlag
 	} // else, no-symbols flag was not provided; so the default will be used.
 	return nil
 }
 
 func (p *Password) validate() (err error) {
-	length := p.passwordLength.value
-	if err := p.passwordLength.Validate(length); err != nil {
+	if err := p.passwordLength.Validate(nil); err != nil {
 		return err
 	}
 	return nil

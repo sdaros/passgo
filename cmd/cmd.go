@@ -7,9 +7,14 @@ import (
 type (
 	// Command supported by passgo.
 	Command interface {
-		Name() string
-		ExecuteFn() func() (CmdResult, error)
 		ApplyCommandFlagsFrom(*app.App) error
+		ExecuteFn() func() (CmdResult, error)
+		Name() string
+	}
+	Param interface {
+		Name() string
+		Usage() string
+		Validate(interface{}) error
 	}
 	CmdResult interface{}
 )
@@ -18,6 +23,8 @@ var (
 	passgoCommands = []Command{
 		NewPassword(),
 		NewGenerate(),
+		NewStamp(),
+		NewScrypt(),
 	}
 	PassgoCommands = make(map[string]Command)
 )
