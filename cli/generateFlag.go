@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 type generateFlag struct {
 	isCommand bool

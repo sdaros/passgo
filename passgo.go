@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	env := environment.Environment(new(environment.StandardLogger), nil, nil)
+	env := environment.Environment(new(environment.StandardLogger), nil)
 	passgo := app.Passgo(env, nil)
 	if err := processInput(passgo); err != nil {
 		passgo.Info("error:\n", err)

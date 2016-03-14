@@ -1,4 +1,4 @@
-package cmd
+package cli
 
 type passwordFlag struct {
 	name      string

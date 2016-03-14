@@ -22,8 +22,8 @@ func Parse(passgo *app.App) {
 }
 
 func registerCliFlagsWithPassgoRegistrar(passgo *app.App, flagSet *flag.FlagSet) {
-	passgo.Register("passgoFlags", cmd.PassgoFlags)
-	flagsToParse := passgo.Lookup("passgoFlags").([]cmd.PassgoFlag)
+	passgo.Register("passgoFlags", PassgoFlags)
+	flagsToParse := passgo.Lookup("passgoFlags").([]PassgoFlag)
 	for _, flag := range flagsToParse {
 		flagSet.Var(flag, flag.Name(), flag.Usage())
 		passgo.Register(flag.Name(), flag)
@@ -32,7 +32,7 @@ func registerCliFlagsWithPassgoRegistrar(passgo *app.App, flagSet *flag.FlagSet)
 
 func thenRegisterCommandToExecute(passgo *app.App) func(*flag.Flag) {
 	fn := func(f *flag.Flag) {
-		currentFlag := f.Value.(cmd.PassgoFlag)
+		currentFlag := f.Value.(PassgoFlag)
 		if currentFlag.IsCommand() {
 			commandToExecute := cmd.PassgoCommands[currentFlag.Name()]
 			passgo.Register("commandToExecute", commandToExecute)
