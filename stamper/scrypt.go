@@ -17,12 +17,12 @@ type Scrypt struct {
 	EntropyImplementation entropy.Entropy
 }
 
-func (s *Scrypt) Stamp(postage *mailbag.Postage) (*mailbag.Bulla, error) {
+func (s *Scrypt) Stamp(postage mailbag.Postage) (*mailbag.Bulla, error) {
 	salt, err := generateSalt(s.Length, s.EntropyImplementation)
 	if err != nil {
 		return nil, ErrStamp
 	}
-	result, err := scrypt.Key(*postage, salt, s.N, s.R, s.P, s.Length)
+	result, err := scrypt.Key(postage, salt, s.N, s.R, s.P, s.Length)
 	if err != nil {
 		return nil, ErrStamp
 	}

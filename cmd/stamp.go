@@ -12,6 +12,7 @@ import (
 type Stamp struct {
 	*app.App
 	execute func() (CmdResult, error)
+	impl    stamper.Stamper
 	name    string
 	postage *stamp.Postage
 	result  CmdResult
@@ -21,6 +22,7 @@ type Stamp struct {
 func NewStamp() *Stamp {
 	stamp := &Stamp{
 		App:     app.Null(),
+		impl:    NewScrypt(),
 		name:    "stamp",
 		postage: stamp.NewPostage(),
 	}
@@ -36,15 +38,11 @@ func stampExecuteFn(s *Stamp) func() (CmdResult, error) {
 		if err := s.validate(); err != nil {
 			return nil, err
 		}
-		if s.App.Lookup("stamper") != nil {
-			stamperFromApp := s.App.Lookup("stamper").(stamper.Stamper)
-			bulla, err := stamperFromApp.Stamp(s.postage.Value())
-			if err != nil {
-				return nil, err
-			}
-			return bulla, nil
+		bulla, err := s.impl.Stamp(s.postage.Value())
+		if err != nil {
+			return nil, err
 		}
-		return nil, errors.New("cmd: no stamper implementation given.")
+		return bulla, nil
 	}
 	return stampExecuteFn
 }

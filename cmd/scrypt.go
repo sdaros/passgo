@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/sdaros/passgo/app"
+	"github.com/sdaros/passgo/cmd/stamp"
 	"github.com/sdaros/passgo/cmd/stamp/scrypt"
 	"github.com/sdaros/passgo/mailbag"
 	"github.com/sdaros/passgo/stamper"
@@ -17,16 +18,18 @@ type Scrypt struct {
 	nParam  *scrypt.NParam
 	pParam  *scrypt.PParam
 	rParam  *scrypt.RParam
+	postage *stamp.Postage
 }
 
 func NewScrypt() *Scrypt {
 	scrypt := &Scrypt{
-		App:    app.Null(),
-		length: scrypt.NewLength(),
-		name:   "scrypt",
-		nParam: scrypt.NewNParam(),
-		pParam: scrypt.NewPParam(),
-		rParam: scrypt.NewRParam(),
+		App:     app.Null(),
+		length:  scrypt.NewLength(),
+		name:    "scrypt",
+		nParam:  scrypt.NewNParam(),
+		pParam:  scrypt.NewPParam(),
+		rParam:  scrypt.NewRParam(),
+		postage: stamp.NewPostage(),
 	}
 	scrypt.execute = scryptExecuteFn(scrypt)
 	return scrypt
@@ -38,12 +41,12 @@ func scryptExecuteFn(sc *Scrypt) func() (CmdResult, error) {
 		if err := sc.Validate(nil); err != nil {
 			return nil, err
 		}
-		return sc.Stamp(new(mailbag.Postage))
+		return sc.Stamp(sc.postage.Value())
 	}
 	return scryptExecuteFn
 }
 
-func (sc *Scrypt) Stamp(postage *mailbag.Postage) (*mailbag.Bulla, error) {
+func (sc *Scrypt) Stamp(postage mailbag.Postage) (*mailbag.Bulla, error) {
 	stamper := &stamper.Scrypt{
 		EntropyImplementation: sc.App.Entropy,
 		Length:                sc.length.Value(),

@@ -9,7 +9,7 @@ type scryptFlag struct {
 func NewScryptFlag() *scryptFlag {
 	return &scryptFlag{
 		name:      "scrypt-stamper",
-		usage:     "generate stamped (hashed with PBKDF) postage.",
+		usage:     "generate stamped (hashed with PBKDF) postage using scrypt.",
 		isCommand: true,
 	}
 }
