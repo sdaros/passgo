@@ -7,7 +7,7 @@ import (
 type (
 	// Command supported by passgo.
 	Command interface {
-		ApplyCommandFlagsFrom(*app.App) error
+		ApplyCommandParamsFrom(*app.App) error
 		ExecuteFn() func() (CmdResult, error)
 		Name() string
 	}

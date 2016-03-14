@@ -15,7 +15,7 @@ func TestPasswordRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 		passwordCmd := NewPassword()
 
 		Convey("when we apply those flags to the Password Command", func() {
-			err := passwordCmd.ApplyCommandFlagsFrom(passgo)
+			err := passwordCmd.ApplyCommandParamsFrom(passgo)
 
 			Convey("we should not receive an error", func() {
 

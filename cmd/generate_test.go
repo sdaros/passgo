@@ -25,7 +25,7 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 
 		Convey("when the Passgo registrar that its trying to receive "+
 			"its command flags from is nil", func() {
-			err := generateCmd.ApplyCommandFlagsFrom(nil)
+			err := generateCmd.ApplyCommandParamsFrom(nil)
 
 			Convey("we should receive an error", func() {
 
@@ -36,7 +36,7 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 
 		// TODO: this convey could be compacted into a for loop
 		Convey("when we apply those flags to the Generate Command", func() {
-			err := generateCmd.ApplyCommandFlagsFrom(passgo)
+			err := generateCmd.ApplyCommandParamsFrom(passgo)
 
 			Convey("we should not receive an error", func() {
 

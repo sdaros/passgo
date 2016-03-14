@@ -56,7 +56,7 @@ func NewPassword() *Password {
 // composed of random elements chosen from a rune pool
 func passwordExecuteFn(p *Password) func() (CmdResult, error) {
 	passwordExecuteFn := func() (CmdResult, error) {
-		p.ApplyCommandFlagsFrom(p.App)
+		p.ApplyCommandParamsFrom(p.App)
 		if err := p.validate(); err != nil {
 			return nil, err
 		}
@@ -101,7 +101,7 @@ func (p *Password) randomIndexFromRunePool(runePool []rune) (int64, error) {
 	return p.Int(len(runePool) - 1)
 }
 
-func (p *Password) ApplyCommandFlagsFrom(passgo *app.App) error {
+func (p *Password) ApplyCommandParamsFrom(passgo *app.App) error {
 	if passgo == nil {
 		return errors.New("We need a valid Passgo object to retrieve flags")
 	}

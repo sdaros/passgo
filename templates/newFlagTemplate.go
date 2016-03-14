@@ -7,15 +7,15 @@ import (
 	"strconv"
 )
 
-type {{.LcName}} struct {
+type {{.Name}} struct {
 	name      string
 	usage     string
 	value     int
 	isCommand bool
 }
 
-func New{{.Name}}() *{{.LcName}} {
-	return &{{.LcName}}{
+func New{{.Name}}() *{{.Name}} {
+	return &{{.Name}}{
 		name:      "{{.HyphenName}}",
 		usage:     "{{.Usage}}",
 		value:     {{.DefaultValue}},
@@ -23,7 +23,7 @@ func New{{.Name}}() *{{.LcName}} {
 	}
 }
 
-func (self *{{.LcName}}) Set(value string) (err error) {
+func (self *{{.Name}}) Set(value string) (err error) {
 	// TODO: implement logic
 	{{.ShortName}}, err := strconv.Atoi(value)
 	if err != nil {
@@ -36,18 +36,18 @@ func (self *{{.LcName}}) Set(value string) (err error) {
 	return nil
 }
 
-func (self *{{.LcName}}) Validate() (err error) {
+func (self *{{.Name}}) Validate() (err error) {
 	// TODO: implement logic
 	return nil
 }
 
-func (self *{{.LcName}}) String() string {
+func (self *{{.Name}}) String() string {
 	return fmt.Sprint(self.value)
 }
 
-func (self *{{.LcName}}) IsCommand() bool { return self.isCommand }
+func (self *{{.Name}}) IsCommand() bool { return self.isCommand }
 
-func (self *{{.LcName}}) Name() string { return self.name }
+func (self *{{.Name}}) Name() string { return self.name }
 
-func (self *{{.LcName}}) Usage() string { return self.usage }
+func (self *{{.Name}}) Usage() string { return self.usage }
 `

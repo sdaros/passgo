@@ -8,21 +8,21 @@ import (
 
 type Scrypt struct {
 	// n and r control scrypt's memory requirements
-	n int
-	r int
+	N int
+	R int
 	// p controls whether scrypt can run on multiple processors
-	p int
+	P int
 	// length in bytes
-	len                   int
-	entropyImplementation entropy.Entropy
+	Length                int
+	EntropyImplementation entropy.Entropy
 }
 
 func (s *Scrypt) Stamp(postage *mailbag.Postage) (*mailbag.Bulla, error) {
-	salt, err := generateSalt(s.len, s.entropyImplementation)
+	salt, err := generateSalt(s.Length, s.EntropyImplementation)
 	if err != nil {
 		return nil, ErrStamp
 	}
-	result, err := scrypt.Key(*postage, salt, s.n, s.r, s.p, s.len)
+	result, err := scrypt.Key(*postage, salt, s.N, s.R, s.P, s.Length)
 	if err != nil {
 		return nil, ErrStamp
 	}

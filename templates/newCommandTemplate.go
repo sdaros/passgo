@@ -29,7 +29,7 @@ func New{{.Name}}() *{{.Name}} {
 //
 func {{.LcName}}ExecuteFn({{.ShortName}} *{{.Name}}) func() (CmdResult, error) {
 	{{.LcName}}ExecuteFn := func() (CmdResult, error) {
-		{{.ShortName}}.ApplyCommandFlagsFrom({{.ShortName}}.App)
+		{{.ShortName}}.ApplyCommandParamsFrom({{.ShortName}}.App)
 		if err := {{.ShortName}}.Validate(); err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func {{.LcName}}ExecuteFn({{.ShortName}} *{{.Name}}) func() (CmdResult, error) {
 func ({{.ShortName}} *{{.Name}}) ExecuteFn() func() (CmdResult, error) { return {{.ShortName}}.execute }
 
 //
-func ({{.ShortName}} *{{.Name}}) ApplyCommandFlagsFrom(passgo *app.App) error {
+func ({{.ShortName}} *{{.Name}}) ApplyCommandParamsFrom(passgo *app.App) error {
 	if passgo == nil {
 		return errors.New("We need a valid Passgo object to retrieve flags")
 	}

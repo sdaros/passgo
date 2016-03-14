@@ -44,7 +44,7 @@ func NewGenerate() *Generate {
 // an Envelope with the sealed Secret.
 func generateExecuteFn(g *Generate) func() (CmdResult, error) {
 	generateFn := func() (CmdResult, error) {
-		g.ApplyCommandFlagsFrom(g.App)
+		g.ApplyCommandParamsFrom(g.App)
 		if err := g.validate(); err != nil {
 			return nil, err
 		}
@@ -72,7 +72,7 @@ func (g *Generate) executeSubCommands() [1]func() (CmdResult, error) {
 	return executeSubCommandFuncs
 }
 
-func (g *Generate) ApplyCommandFlagsFrom(passgo *app.App) error {
+func (g *Generate) ApplyCommandParamsFrom(passgo *app.App) error {
 	if passgo == nil {
 		return errors.New("We need a valid Passgo object to retrieve flags")
 	}

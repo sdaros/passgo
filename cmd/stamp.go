@@ -1,25 +1,28 @@
 package cmd
 
 import (
+	"errors"
+
 	"github.com/sdaros/passgo/app"
-	"github.com/sdaros/passgo/mailbag"
+	"github.com/sdaros/passgo/cmd/stamp"
+	"github.com/sdaros/passgo/stamper"
 )
 
 // Stamp returns stamped (hashed with a PBKDF) postage.
 type Stamp struct {
-	name    string
-	execute func() (CmdResult, error)
-	postage *mailbag.Postage
-	result  CmdResult
 	*app.App
+	execute func() (CmdResult, error)
+	name    string
+	postage *stamp.Postage
+	result  CmdResult
 }
 
 // NewStamp returns a stamp command with default values.
 func NewStamp() *Stamp {
 	stamp := &Stamp{
-		name:    "stamp",
-		postage: new(mailbag.Postage),
 		App:     app.Null(),
+		name:    "stamp",
+		postage: stamp.NewPostage(),
 	}
 	stamp.execute = stampExecuteFn(stamp)
 	return stamp
@@ -29,12 +32,39 @@ func NewStamp() *Stamp {
 // the postage plus associated salt.
 func stampExecuteFn(s *Stamp) func() (CmdResult, error) {
 	stampExecuteFn := func() (CmdResult, error) {
-		s.ApplyCommandFlagsFrom(s.App)
+		s.ApplyCommandParamsFrom(s.App)
 		if err := s.validate(); err != nil {
 			return nil, err
 		}
-		bulla, err := s.App.Stamp(s.postage)
-		return nil, nil
+		if s.App.Lookup("stamper") != nil {
+			stamperFromApp := s.App.Lookup("stamper").(stamper.Stamper)
+			bulla, err := stamperFromApp.Stamp(s.postage.Value())
+			if err != nil {
+				return nil, err
+			}
+			return bulla, nil
+		}
+		return nil, errors.New("cmd: no stamper implementation given.")
 	}
 	return stampExecuteFn
 }
+
+func (s *Stamp) ExecuteFn() func() (CmdResult, error) { return s.execute }
+
+func (s *Stamp) ApplyCommandParamsFrom(passgo *app.App) error {
+	if passgo == nil {
+		return errors.New("We need a valid Passgo object to retrieve flags")
+	}
+	s.App = passgo
+	if s.App.Lookup("postage") != nil {
+		postageFromApp := s.App.Lookup("postage").(*stamp.Postage)
+		s.postage = postageFromApp
+	} // else, postage param was not provided.
+	return nil
+}
+
+func (s *Stamp) validate() error {
+	return nil
+}
+
+func (s *Stamp) Name() string { return s.name }
