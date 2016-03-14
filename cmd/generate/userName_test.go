@@ -7,7 +7,7 @@ import (
 
 func TestUserNameFlagValidationRules(t *testing.T) {
 	Convey("Given a user-name flag", t, func() {
-		userName := NewUserNameFlag()
+		userName := NewUserName()
 
 		Convey("when user-name is an invalid utf8 string", func() {
 

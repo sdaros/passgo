@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/sdaros/passgo/app"
+	"github.com/sdaros/passgo/cmd/generate"
+	"github.com/sdaros/passgo/cmd/password"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )
@@ -21,11 +23,11 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 		"from a Passgo registrar", t, func() {
 		passgo := app.Null()
 		passgo = registerGenerateCommandFlagsWithPassgoRegistrar(passgo)
-		generateCmd := NewGenerate()
+		command := NewGenerate()
 
 		Convey("when the Passgo registrar that its trying to receive "+
 			"its command flags from is nil", func() {
-			err := generateCmd.ApplyCommandParamsFrom(nil)
+			err := command.ApplyCommandParamsFrom(nil)
 
 			Convey("we should receive an error", func() {
 
@@ -36,7 +38,7 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 
 		// TODO: this convey could be compacted into a for loop
 		Convey("when we apply those flags to the Generate Command", func() {
-			err := generateCmd.ApplyCommandParamsFrom(passgo)
+			err := command.ApplyCommandParamsFrom(passgo)
 
 			Convey("we should not receive an error", func() {
 
@@ -47,7 +49,7 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 				"should equal the value of the user-name flag that "+
 				"was provided to the Passgo registrar", func() {
 
-				So(generateCmd.userName.value, ShouldEqual, "zap_rowsdower")
+				So(command.userName.Value(), ShouldEqual, "zap_rowsdower")
 
 			})
 
@@ -55,21 +57,21 @@ func TestGenerateCommandRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 				"should equal the value of the url flag that "+
 				"was provided to the Passgo registrar", func() {
 
-				So(generateCmd.url.value, ShouldEqual, "https://cip.li")
+				So(command.url.Value(), ShouldEqual, "https://cip.li")
 			})
 
 			Convey("the value of the password-length flag in the Generate command "+
 				"should equal the value of the password-length flag that "+
 				"was provided to the Passgo registrar", func() {
 
-				So(generateCmd.passwordLength.value, ShouldEqual, 10)
+				So(command.passwordLength.Value(), ShouldEqual, 10)
 			})
 
 			Convey("the value of the no-symbols flag in the Generate command "+
 				"should equal the value of the no-symbols flag that "+
 				"was provided to the Passgo registrar", func() {
 
-				So(generateCmd.noSymbols.value, ShouldEqual, false)
+				So(command.noSymbols.Value(), ShouldEqual, false)
 			})
 		})
 
@@ -83,20 +85,20 @@ func TestGenerateCommandValidatesItsCommandFlags(t *testing.T) {
 }
 
 func registerGenerateCommandFlagsWithPassgoRegistrar(passgo *app.App) *app.App {
-	urlFlag := NewUrlFlag()
-	urlFlag.value = "https://cip.li"
-	passgo.Register(urlFlag.Name(), urlFlag)
+	url := generate.NewUrl()
+	url.Set("https://cip.li")
+	passgo.Register(url.Name(), url)
 
-	userNameFlag := NewUserNameFlag()
-	userNameFlag.value = "zap_rowsdower"
-	passgo.Register(userNameFlag.Name(), userNameFlag)
+	userName := generate.NewUserName()
+	userName.Set("zap_rowsdower")
+	passgo.Register(userName.Name(), userName)
 
-	plengthFlag := NewPasswordLengthFlag()
-	plengthFlag.value = 10
-	passgo.Register(plengthFlag.Name(), plengthFlag)
+	pLength := password.NewLength()
+	pLength.Set("10")
+	passgo.Register(pLength.Name(), pLength)
 
-	noSymbolsFlag := NewNoSymbolsFlag()
-	passgo.Register(noSymbolsFlag.Name(), noSymbolsFlag)
+	noSymbols := password.NewNoSymbols()
+	passgo.Register(noSymbols.Name(), noSymbols)
 
 	return passgo
 }

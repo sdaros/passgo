@@ -7,7 +7,7 @@ import (
 
 func TestUrlFlagValidationRules(t *testing.T) {
 	Convey("Given a url flag", t, func() {
-		url := NewUrlFlag()
+		url := NewUrl()
 
 		Convey("when url is an invalid utf8 string", func() {
 

@@ -21,6 +21,9 @@ func main() {
 func processInput(passgo *app.App) error {
 	cli.Parse(passgo)
 	command := passgo.Lookup("commandToExecute").(cmd.Command)
+	if err := command.ApplyCommandParamsFrom(passgo); err != nil {
+		return err
+	}
 	execute := command.ExecuteFn()
 	cmdResult, err := execute()
 	if err != nil {

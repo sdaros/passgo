@@ -3,9 +3,8 @@ package stamper
 
 import (
 	"bytes"
-	"fmt"
-	"github.com/sdaros/passgo/app"
 	"github.com/sdaros/passgo/entropy"
+	"github.com/sdaros/passgo/mailbag"
 	. "github.com/smartystreets/goconvey/convey"
 	"golang.org/x/crypto/scrypt"
 	"testing"
@@ -13,12 +12,11 @@ import (
 
 func TestDefaultStamperAgainstCryptoScrypt(t *testing.T) {
 	Convey("Given a postage to stamp", t, func() {
-		postage := new(mailbag.Postage)
-		postage = []byte("p@ssw0rd")
+		postage := mailbag.Postage([]byte("p@ssw0rd"))
 
-		Convey("When using default stamper implementation", func() {
+		Convey("When using passgo's default stamper implementation", func() {
 
-			Convey("")
+			Convey("We should receive the same as the crypto/scrypt library implementation", nil)
 
 		})
 	})

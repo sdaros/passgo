@@ -2,20 +2,20 @@ package cmd
 
 import (
 	"github.com/sdaros/passgo/app"
+	"github.com/sdaros/passgo/cmd/password"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 	"unicode"
 )
 
-func TestPasswordRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
-	Convey("Given a Password Command that receives its command flags "+
+func TestPasswordRetrievesCommandParamsFromPassgoRegistrar(t *testing.T) {
+	Convey("Given a Password Command that receives its command params "+
 		"from the Passgo registrar", t, func() {
 		passgo := app.Null()
-		passgo = registerPasswordCommandFlagsWithPassgoRegistrar(passgo)
-		passwordCmd := NewPassword()
-
+		passgo = registerPasswordCommandParamsWithPassgoRegistrar(passgo)
+		command := NewPassword()
 		Convey("when we apply those flags to the Password Command", func() {
-			err := passwordCmd.ApplyCommandParamsFrom(passgo)
+			err := command.ApplyCommandParamsFrom(passgo)
 
 			Convey("we should not receive an error", func() {
 
@@ -25,20 +25,20 @@ func TestPasswordRetrievesCommandFlagsFromPassgoRegistrar(t *testing.T) {
 			Convey("the value of the password-length flag in Password should equal "+
 				"what was provided to the Passgo registrar", func() {
 
-				So(passwordCmd.passwordLength.value, ShouldEqual, 10)
+				So(command.passwordLength.Value(), ShouldEqual, 10)
 			})
 
 			Convey("the value of the no-symbols flag in Password should equal "+
 				"what was provided to the Passgo registrar", func() {
 
-				So(passwordCmd.noSymbols.value, ShouldEqual, false)
+				So(command.noSymbols.Value(), ShouldEqual, false)
 			})
 		})
 
 	})
 }
 
-func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
+func TestPasswordAppliesCommandParamsProperly(t *testing.T) {
 	Convey("Given a Password Command", t, func() {
 		command := NewPassword()
 		commandExecuteFunc := command.execute
@@ -70,7 +70,7 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 
 		})
 		Convey("When the value of password-length flag is 256", func() {
-			command.passwordLength.value = 256
+			command.passwordLength.Set("256")
 
 			Convey("The result of the command should be a password "+
 				"with length of 256 characters", func() {
@@ -84,7 +84,7 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 		})
 
 		Convey("When the value of no-symbols flag is true", func() {
-			command.noSymbols.value = true
+			command.noSymbols.Set("true")
 
 			Convey("The result of the command should be a password "+
 				"that does not contain any symbols (is "+
@@ -97,7 +97,7 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 		})
 
 		Convey("When the value of no-symbols flag is false", func() {
-			command.noSymbols.value = false
+			command.noSymbols.Set("false")
 
 			Convey("The result of the command should be a password "+
 				"that *contains* symbols (see cmd.PasswordCommand)", func() {
@@ -114,7 +114,7 @@ func TestPasswordAppliesCommandFlagsProperly(t *testing.T) {
 
 func passwordContainsSymbols(p *Password) (bool, error) {
 	// password-length should be sufficiently large.
-	p.passwordLength.value = 256
+	p.passwordLength.Set("256")
 	passwordExecuteFn := p.ExecuteFn()
 	cmdResult, err := passwordExecuteFn()
 	if err != nil {
@@ -130,13 +130,13 @@ func passwordContainsSymbols(p *Password) (bool, error) {
 	return isSymbolFound, nil
 }
 
-func registerPasswordCommandFlagsWithPassgoRegistrar(passgo *app.App) *app.App {
-	plengthFlag := NewPasswordLengthFlag()
-	plengthFlag.value = 10
-	passgo.Register(plengthFlag.Name(), plengthFlag)
+func registerPasswordCommandParamsWithPassgoRegistrar(passgo *app.App) *app.App {
+	pLength := password.NewLength()
+	pLength.Set("10")
+	passgo.Register(pLength.Name(), pLength)
 
-	noSymbolsFlag := NewNoSymbolsFlag()
-	passgo.Register(noSymbolsFlag.Name(), noSymbolsFlag)
+	noSymbols := password.NewNoSymbols()
+	passgo.Register(noSymbols.Name(), noSymbols)
 
 	return passgo
 }

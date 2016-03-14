@@ -86,12 +86,12 @@ func (g *Generate) ApplyCommandParamsFrom(passgo *app.App) error {
 		g.url = urlFlag
 	} // else, url param was not provided; so the default will be used.
 	if g.App.Lookup("password-length") != nil {
-		passwordLengthFlag := g.App.Lookup("password-length").(*password.Length)
-		g.passwordLength = passwordLengthFlag
+		pLengthFromApp := g.App.Lookup("password-length").(*password.Length)
+		g.passwordLength = pLengthFromApp
 	} // else, password-length param was not provided; so the default will be used.
 	if g.App.Lookup("no-symbols") != nil {
-		noSymbolsFlag := g.App.Lookup("no-symbols").(*password.NoSymbols)
-		g.noSymbols = noSymbolsFlag
+		noSymbolsFromApp := g.App.Lookup("no-symbols").(*password.NoSymbols)
+		g.noSymbols = noSymbolsFromApp
 	} // else, no-symbols param was not provided; so the default will be used.
 	return nil
 }

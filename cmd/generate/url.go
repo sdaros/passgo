@@ -16,7 +16,7 @@ type Url struct {
 // NewUrl returns a new empty UserNameFlag.
 func NewUrl() *Url {
 	return &Url{
-		name:      "Url",
+		name:      "url",
 		usage:     "Url associated with a secret.",
 		isCommand: false,
 	}
@@ -30,6 +30,10 @@ func (ur *Url) Usage() string {
 	return ur.usage
 }
 
+func (ur *Url) Value() string {
+	return ur.value
+}
+
 func (ur *Url) IsCommand() bool {
 	return ur.isCommand
 }
@@ -40,11 +44,11 @@ func (ur *Url) String() string {
 }
 
 // Set sets the value for the Url and validates it.
-func (ur *Url) Set(fromCli string) (err error) {
-	if err := ur.Validate(fromCli); err != nil {
+func (ur *Url) Set(value string) (err error) {
+	if err := ur.Validate(value); err != nil {
 		return err
 	}
-	ur.value = fromCli
+	ur.value = value
 	return nil
 }
 
