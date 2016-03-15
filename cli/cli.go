@@ -33,8 +33,10 @@ func registerCliFlagsWithPassgoRegistrar(passgo *app.App, flagSet *flag.FlagSet)
 func thenRegisterCommandToExecute(passgo *app.App) func(*flag.Flag) {
 	fn := func(f *flag.Flag) {
 		currentFlag := f.Value.(PassgoFlag)
-		if currentFlag.IsCommand() {
-			commandToExecute := cmd.PassgoCommands[currentFlag.Name()]
+		currentFlagIsOf := cmd.PassgoCommands[currentFlag.Name()]
+		switch currentFlagIsOf.(type) {
+		case cmd.Command:
+			commandToExecute := currentFlagIsOf
 			passgo.Register("commandToExecute", commandToExecute)
 		}
 	}

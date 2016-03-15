@@ -63,7 +63,6 @@ func generateExecuteFn(g *Generate) func() (CmdResult, error) {
 func (g *Generate) ExecuteFn() func() (CmdResult, error) { return g.execute }
 
 // executeSubCommands executes dependencies (subcommands) required by Generate.
-// Generate is dependent on only the Password subcommand.
 func (g *Generate) executeSubCommands() [1]func() (CmdResult, error) {
 	var executeSubCommandFuncs [1]func() (CmdResult, error)
 	passwordSubCommand := NewPassword()

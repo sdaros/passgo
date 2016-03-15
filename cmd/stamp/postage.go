@@ -6,17 +6,15 @@ import (
 )
 
 type Postage struct {
-	name      string
-	usage     string
-	value     mailbag.Postage
-	isCommand bool
+	name  string
+	usage string
+	value mailbag.Postage
 }
 
 func NewPostage() *Postage {
 	return &Postage{
-		name:      "postage",
-		usage:     "postage that will be stamped.",
-		isCommand: false,
+		name:  "postage",
+		usage: "postage that will be stamped.",
 	}
 }
 
@@ -35,8 +33,6 @@ func (self *Postage) Validate(value interface{}) (err error) {
 func (self *Postage) String() string {
 	return fmt.Sprint(self.value)
 }
-
-func (self *Postage) IsCommand() bool { return self.isCommand }
 
 func (self *Postage) Name() string { return self.name }
 

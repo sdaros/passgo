@@ -7,18 +7,16 @@ import (
 )
 
 type Url struct {
-	name      string
-	usage     string
-	value     string
-	isCommand bool
+	name  string
+	usage string
+	value string
 }
 
 // NewUrl returns a new empty UserNameFlag.
 func NewUrl() *Url {
 	return &Url{
-		name:      "url",
-		usage:     "Url associated with a secret.",
-		isCommand: false,
+		name:  "url",
+		usage: "Url associated with a secret.",
 	}
 }
 
@@ -32,10 +30,6 @@ func (ur *Url) Usage() string {
 
 func (ur *Url) Value() string {
 	return ur.value
-}
-
-func (ur *Url) IsCommand() bool {
-	return ur.isCommand
 }
 
 // String is provided to satisfy flag.Value interface.

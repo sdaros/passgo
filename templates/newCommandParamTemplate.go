@@ -4,14 +4,12 @@ var newFlagTemplate string = `package cmd
 
 import (
         "fmt"
-	"strconv"
 )
 
 type {{.Name}} struct {
 	name      string
 	usage     string
 	value     int
-	isCommand bool
 }
 
 func New{{.Name}}() *{{.Name}} {
@@ -19,7 +17,6 @@ func New{{.Name}}() *{{.Name}} {
 		name:      "{{.HyphenName}}",
 		usage:     "{{.Usage}}",
 		value:     {{.DefaultValue}},
-		isCommand: false,
 	}
 }
 
@@ -45,9 +42,9 @@ func (self *{{.Name}}) String() string {
 	return fmt.Sprint(self.value)
 }
 
-func (self *{{.Name}}) IsCommand() bool { return self.isCommand }
-
 func (self *{{.Name}}) Name() string { return self.name }
 
 func (self *{{.Name}}) Usage() string { return self.usage }
+
+func (self *{{.Name}}) Value() string { return self.value }
 `

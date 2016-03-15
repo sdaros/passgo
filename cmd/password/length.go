@@ -8,10 +8,9 @@ import (
 )
 
 type Length struct {
-	name      string
-	usage     string
-	value     int
-	isCommand bool
+	name  string
+	usage string
+	value int
 }
 
 const (
@@ -22,10 +21,9 @@ const (
 // NewPasswordLength returns a Length parameter with default values.
 func NewLength() *Length {
 	return &Length{
-		name:      "password-length",
-		usage:     "Length of password to be generated.",
-		value:     15,
-		isCommand: false,
+		name:  "password-length",
+		usage: "Length of password to be generated.",
+		value: 15,
 	}
 }
 
@@ -35,10 +33,6 @@ func (l *Length) Name() string {
 
 func (l *Length) Usage() string {
 	return l.usage
-}
-
-func (l *Length) IsCommand() bool {
-	return l.isCommand
 }
 
 // String is provided to satisfy flag.Value interface.

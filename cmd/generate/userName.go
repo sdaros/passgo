@@ -7,10 +7,9 @@ import (
 )
 
 type UserName struct {
-	name      string
-	usage     string
-	value     string
-	isCommand bool
+	name  string
+	usage string
+	value string
 }
 
 func NewUserName() *UserName {
@@ -31,10 +30,6 @@ func (un *UserName) Usage() string {
 
 func (un *UserName) Value() string {
 	return un.value
-}
-
-func (un *UserName) IsCommand() bool {
-	return un.isCommand
 }
 
 func (un *UserName) String() string {

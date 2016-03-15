@@ -6,19 +6,17 @@ import (
 )
 
 type NoSymbols struct {
-	name      string
-	usage     string
-	value     bool
-	isCommand bool
+	name  string
+	usage string
+	value bool
 }
 
 // NewNoSymbolsFlag returns a NoSymbols parameter with default values.
 func NewNoSymbols() *NoSymbols {
 	return &NoSymbols{
-		name:      "no-symbols",
-		usage:     "Do not use special symbols",
-		value:     false,
-		isCommand: false,
+		name:  "no-symbols",
+		usage: "Do not use special symbols",
+		value: false,
 	}
 }
 
@@ -28,10 +26,6 @@ func (ns *NoSymbols) Name() string {
 
 func (ns *NoSymbols) Usage() string {
 	return ns.usage
-}
-
-func (ns *NoSymbols) IsCommand() bool {
-	return ns.isCommand
 }
 
 func (ns *NoSymbols) String() string {
