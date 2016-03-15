@@ -14,9 +14,8 @@ type UserName struct {
 
 func NewUserName() *UserName {
 	return &UserName{
-		name:      "user-name",
-		usage:     "Username associated with a secret.",
-		isCommand: false,
+		name:  "user-name",
+		usage: "Username associated with a secret.",
 	}
 }
 

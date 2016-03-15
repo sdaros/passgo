@@ -6,7 +6,6 @@ import (
 
 // PassgoFlag is parsed when executing commands.
 type PassgoFlag interface {
-	IsCommand() bool
 	Name() string
 	Usage() string
 	flag.Value
