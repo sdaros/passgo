@@ -3,9 +3,10 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/sdaros/passgo/app"
 	"github.com/sdaros/passgo/cmd"
-	"os"
 )
 
 func Parse(passgo *app.App) {

@@ -2,12 +2,20 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/sdaros/passgo/app"
 	"github.com/sdaros/passgo/cli"
 	"github.com/sdaros/passgo/cmd"
 	"github.com/sdaros/passgo/environment"
-	"io"
-	"os"
+)
+
+const (
+	// buildMetadata is replaced when package is built using -ldflags -X
+	// ex: go build -ldflags "-X main.buildMetadata=`git rev-parse HEAD`"
+	buildMetadata = "<placeholder>"
+	version       = "0.1.0"
 )
 
 func main() {
@@ -39,3 +47,5 @@ func processInput(passgo *app.App) error {
 func displayOutputTo(quill io.Writer, cmdResult cmd.CmdResult) (n int, err error) {
 	return fmt.Fprint(quill, cmdResult)
 }
+
+func Version() string { return version + "+" + buildMetadata }

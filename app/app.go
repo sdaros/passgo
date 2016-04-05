@@ -1,15 +1,9 @@
 package app
 
 import (
-	"github.com/sdaros/passgo/environment"
 	"sync"
-)
 
-const (
-	// buildMetadata is replaced when package is built using -ldflags -X
-	// ex: go build -ldflags "-X main.buildMetadata=`git rev-parse HEAD`"
-	buildMetadata = "<placeholder>"
-	version       = "0.1.0"
+	"github.com/sdaros/passgo/environment"
 )
 
 type (
@@ -23,6 +17,9 @@ type (
 	}
 )
 
+// Passgo returns the App instance that is responsible for
+// parsing the environment and registering things during
+// its runtime
 func Passgo(env *environment.Env, registrar *Registrar) *App {
 	// nil environment initialises an empty environment
 	if env == nil {
@@ -34,10 +31,6 @@ func Passgo(env *environment.Env, registrar *Registrar) *App {
 	}
 	return &App{Registrar: registrar, Env: env}
 
-}
-
-func Null() *App {
-	return Passgo(nil, nil)
 }
 
 func (r *Registrar) Register(k string, v interface{}) {
@@ -60,4 +53,6 @@ func (r *Registrar) Lookup(k string) interface{} {
 	return r.values[k]
 }
 
-func Version() string { return version + "+" + buildMetadata }
+func Null() *App {
+	return Passgo(nil, nil)
+}
